@@ -6,6 +6,7 @@
 *.fls
 *.out
 *.toc
+*.toe
 *.fmt
 *.fot
 *.cb
