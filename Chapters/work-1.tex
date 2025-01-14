@@ -1,0 +1,149 @@
+\bichapter{模板使用说明}{Template Usage Guide}
+\bisection{简介}{Overview}
+
+该 \LaTeX 模板按照\href{https://gs.cumt.edu.cn/info/1049/3149.htm}{《中国矿业大学研究生学位论文撰写规定及模板（2021年版）》}的要求编写（以下简称《撰写规定》）。目前支持硕士、博士毕业论文撰写（暂不支持外文学院硕士毕业论文）。
+
+\bisection{文档类}{Document Class and Options}
+在文档开始时，需指定文档类为：
+\begin{center}
+    \texttt{\textbackslash documentclass\{cumt-graduate-thesis\}}
+\end{center}
+
+
+\bisection{元数据配置}{Metadata Configuration}
+\label{section: metadata configuration}
+在文档的导言区，使用 \texttt{\textbackslash cumtsetup\{\}} 配置论文的元数据。以下是一些关键配置项：
+
+\begin{itemize}
+    \item \texttt{output}：设置输出格式，可选 \texttt{electronic}（电子版）或 \texttt{print}（打印版）。
+    \item \texttt{funding-on-cover}：是否在封面显示基金信息，可选 \texttt{true} 或 \texttt{false}。
+    \item \texttt{title} 和 \texttt{title*}：分别设置中文标题和英文标题。
+    \item \texttt{author}：设置作者姓名。
+    \item \texttt{thesis-name}：设置论文类型，如“硕士学位论文”或“博士学位论文”。
+    \item \texttt{supervisor} 和 \texttt{supervisor-title}：设置导师姓名和职称。
+    \item \texttt{co-supervisor} 和 \texttt{co-supervisor-title}：设置第二导师姓名和职称（选填）。
+    \item \texttt{year} 和 \texttt{month}：设置论文提交的年月。
+    \item \texttt{degree-applied}：设置申请学位的名称。
+    \item \texttt{affiliation}：设置培养单位。
+    \item \texttt{major}：设置学科专业。
+    \item \texttt{field}：设置研究方向。
+    \item \texttt{defense-committee-chair}：设置答辩委员会主席。
+    \item \texttt{reviewer}：设置评阅人。
+    \item \texttt{security-level}：设置密级，默认为“公开”。
+    \item \texttt{clc}：设置中图分类号。
+    \item \texttt{udc}：设置 UDC 分类号（选填）。
+    \item \texttt{funding}：设置资助信息，格式为 \texttt{\{<基金名称1>(编号1);<基金名称2>(编号2);...\}}。
+    \item \texttt{degree-category}：设置学位类别。
+    \item \texttt{degree-level}：设置学位级别。
+    \item \texttt{language}：设置论文语种，默认为“中文”。
+    \item \texttt{student-id}：设置学号。
+    \item \texttt{program-duration}：设置学制。
+    \item \texttt{defense-committee-members}：设置答辩委员会成员（选填）。
+    \item \texttt{electronic-thesis-format}：设置电子版论文格式（选填）。
+    \item \texttt{electronic-thesis-publisher}：设置电子版论文出版者（选填）。
+    \item \texttt{electronic-thesis-publisher-location}：设置电子版论文出版地（选填）。
+    \item \texttt{permission-statement}：设置授权声明（选填）。
+\end{itemize}
+
+\bisection{多级标题}{Titles}
+使用以下命令输入各级标题：
+\begin{itemize}[itemsep=2pt,topsep=5pt]
+    \item \verb|\bichapter{}{}|：中文、英文一级标题（章）。
+    \item \verb|\bisection{}{}|：中文、英文二级标题（节）。
+    \item \verb|\subsection{}|：三级标题（小节）。
+    \item \verb|\subsubsection{}|：四级标题（次小节）\footnote{《撰写规定》中未对四、五、六级标题作具体要求}。
+    \item \verb|\paragraph{}|：五级标题（段落）。默认为内嵌(Run-in)标题，可使用\verb|\paragraph*{}|实现陈列(Display)标题。
+    \item \verb|\subparagraph{}|：六级标题（小段）。默认为内嵌(Run-in)标题，可使用\verb|\subparagraph*{}|实现陈列(Display)标题。
+\end{itemize}
+
+\bisection{内容和章节}{Contents and Chapters}
+
+\subsection{封面与扉页}
+\begin{itemize}[itemsep=2pt,topsep=5pt]
+    \item \verb|\MakeCoverPage|：生成封面页。
+    \item \verb|\MakeTitlePage|：生成扉页。
+\end{itemize}
+
+封面与扉页信息来自于元数据（见\ref{section: metadata configuration}），因此请确保所有必要字段都已正确填写。
+
+\subsection{学位论文使用授权声明}
+通过\verb|\MakeCopyrightPage|命令生成。
+
+\subsection{致谢}
+致谢部分放置在\texttt{acknowledgements.tex}，使用\texttt{acknowledgements}环境。
+
+\subsection{摘要与关键词}
+\begin{itemize}[itemsep=2pt,topsep=5pt]
+    \item \verb|\begin{cnabstract}...\end{cnabstract}|：定义中文摘要。
+    \item \verb|\begin{enabstract}...\end{enabstract}|：定义英文摘要。
+    \item \verb|\cnkeywords{}|：定义中文关键词（需要被包裹于\texttt{cnabstract}环境内）。
+    \item \verb|\enkeywords{}|：定义英文关键词（需要被包裹于\texttt{enabstract}环境内）。
+    \item \verb|\MakeCnAbstract|：生成中文摘要页面。
+    \item \verb|\MakeEnAbstract|：生成英文摘要页面。
+\end{itemize}
+
+\subsection{目录}
+\begin{itemize}[itemsep=2pt,topsep=5pt]
+    \item \verb|\MakeCnContents|：生成中文目录。
+    \item \verb|\MakeEnContents|：生成英文目录。
+\end{itemize}
+
+\subsection{图表清单}
+\begin{itemize}[itemsep=2pt,topsep=5pt]
+    \item \verb|\MakeListOfFigures|：生成图清单。
+    \item \verb|\MakeListOfTables|：生成表清单。
+\end{itemize}
+
+\subsection{变量注释表}
+变量注释表放置在\texttt{denotation.tex}，使用\texttt{denotation}环境，并使用\verb|\Variable{}{}|命令依次添加符号和解释。
+
+\subsection{正文内容}
+正文部分每个章节应保存为单独的.tex文件，并通过\verb|\input{}|命令引入主文档中。
+
+\subsection{脚注}
+使用\verb|\footnote{}|命令插入脚注\footnote{脚注示例}。
+
+\subsection{参考文献}
+参考文献列表由\verb|\MakeReferencePage|命令生成，并按照GB/T-7714标准进行引用格式化。使用\verb|\addbibresource{}|在导言区指定bib文件。
+
+\subsection{附录}
+附录用于包含补充材料（非必须）。该部分放置在\texttt{appendix.tex}，需使用\texttt{appendix}环境。
+
+\subsection{简历}
+简历部分放置在\texttt{resume.tex}，需使用\texttt{resume}环境\footnote{使用\texttt{\textbackslash resumesection{}}命令添加小节标题。}。
+
+\subsection{原创性声明}
+原创性声明页可通过\verb|\MakeDeclarationPage|命令生成。
+
+\subsection{学位论文数据集}
+学位论文数据集页面由\verb|\MakeDataCollectionPage|命令生成，其中包含了论文的各项元数据信息，如密级、分类号、资助项目等。
+
+\bisection{浮动体}{Floats}
+\subsection{图}
+模板使用 \textsf{subcaption} 宏包实现子图。具体用法参考\url{https://mirrors.ibiblio.org/CTAN/macros/latex/contrib/caption/subcaption.pdf}
+
+\subsection{表}
+......
+
+\subsection{算法}
+模板中使用 \texttt{algorithm2e} 宏包实现算法环境。具体用法参考官方文档。
+
+\begin{algorithm}
+  \SetAlgoLined
+  \KwData{this text}
+  \KwResult{some text }
+  $x:=x_{0}$\;
+  \While{$x<100$}{
+    $x:=y^2$\;
+    \eIf{$x>a$}{
+      $y:=y-1$\;
+      $c:=10290$\;
+    }{
+      $y:=y/2$\;
+    }
+  }
+  \caption{**算法}
+  \label{algo:algorithm1}
+\end{algorithm}
+
+\nocite{*}
