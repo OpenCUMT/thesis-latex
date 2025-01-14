@@ -21,8 +21,8 @@
 % SOFTWARE.
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesClass{cumt-graduate-thesis}[2025/01/09 V2.0.1 CUMT Graduate Thesis Template]
-\def\version{2.0.1}
+\ProvidesClass{cumt-graduate-thesis}[2025/01/09 V2.0.1-beta CUMT Graduate Thesis Template]
+\def\version{2.0.1-beta}
 
 % 错误和警告
 \newcommand\cumt@raise@error[1]{%
