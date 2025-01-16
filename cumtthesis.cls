@@ -47,6 +47,9 @@
 % 字符串布尔
 \def\@true{true}
 \def\@false{false}
+\def\@degree@doctor{博士}
+\def\@degree@master{硕士}
+\def\@degree@bachelor{学士}
 
 % 处理键值选项
 \RequirePackage{kvdefinekeys}
@@ -219,10 +222,10 @@
             name=degree@category,
             default= ,
         },
-    degree-level={
-            name=degree@level,
-            default= ,
-        },
+    % degree-level={
+    %         name=degree@level,
+    %         default= ,
+    %     },
     language={
             name=language,
             default=中文,
@@ -266,6 +269,7 @@
 }
 
 % 一些辅助命令
+\RequirePackage{xstring}
 \ExplSyntaxOn
 % 英文符号->中文符号
 \NewDocumentCommand\cumt@format@symbols@cn@inplace{m}
@@ -336,6 +340,32 @@
 }
 \ExplSyntaxOff
 
+\newcommand\cumt@check@degree{
+    \IfSubStr{\cumt@thesis@name@full}{博士}
+    { 
+        \gdef\cumt@degree@level{博士}
+        \gdef\cumt@thesis@name@en{Dissertation}
+    }
+    {
+        \IfSubStr{\cumt@thesis@name@full}{硕士}
+        { 
+            \gdef\cumt@degree@level{硕士}
+            \gdef\cumt@thesis@name@en{Thesis}
+        }
+        {
+            \IfSubStr{\cumt@thesis@name@full}{本科}
+            { 
+                \gdef\cumt@degree@level{学士}
+                \gdef\cumt@thesis@name@en{Thesis}
+            }
+            {
+                \cumt@raise@error{Check degree failed: \cumt@thesis@name@full}
+            }
+        }
+    }
+}
+
+
 \cumt@option@hook{title}{\title{\cumt@title}}
 \cumt@option@hook{author}{\author{\cumt@author}}
 \cumt@option@hook{year}{\cumt@format@digits@arabic@inplace{cumt@year}}
@@ -345,13 +375,9 @@
     \gdef\cumt@funding@list{\cumt@funding}
     \cumt@format@funding@list@inplace{cumt@funding@list}
 }
+
 \cumt@option@hook{thesis-name}{
-    \def\cumt@thesis@name@doctor{博士学位论文}
-    \ifx\cumt@thesis@name@doctor\cumt@thesis@name@full
-        \gdef\cumt@thesis@name@en{Dissertation}%
-    \else
-        \gdef\cumt@thesis@name@en{Thesis}%
-    \fi
+    \cumt@check@degree
 }
 % 合并导师名称
 \AtBeginDocument{%
@@ -1126,17 +1152,16 @@
 
 % 参考文献
 \newcommand\MakeReferencePage{
-    \vspace*{0bp}
-    {\centering\linespread{1}\zihao{-2}\heiti\bfseries 参考文献\par}
     \phantomsection
     \addcontentsline{toc}{chapter}{参考文献}
     \addcontentsline{toe}{chapter}{References}
-    \vspace*{-6bp}
+    \chapter*{\hspace*{\fill}参考文献\hspace*{\fill}}
+    \vspace*{20bp}
     \setlength{\bibhang}{0bp}
     \setlength{\bibitemsep}{0bp}
     \renewcommand\bibfont{\zihao{5}}
     \begingroup
-    \setstretch{1.667} % 约为20bp
+    \setstretch{1.667} % linespread = lineskip / fontsize = 20bp / 12bp ≈ 1.667
     \printbibliography[heading=none]
     \endgroup
     \cumt@clearpage
@@ -1470,9 +1495,9 @@
     {%
         \ctexset{paragraph/runin = false}
         \buildinparagraph{#2}
-        \ctexset{paragraph/runin = true}
     }
     {% 
+        \ctexset{paragraph/runin = true}
         \buildinparagraph{#2}
     }
 }
@@ -1482,9 +1507,9 @@
     {%
         \ctexset{subparagraph/runin = false}
         \buildinsubparagraph{#2}
-        \ctexset{subparagraph/runin = true}
     }
     {%
+        \ctexset{subparagraph/runin = true}
         \buildinsubparagraph{#2}
     }
 
