@@ -21,15 +21,16 @@
 % SOFTWARE.
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesClass{cumt-graduate-thesis}[2025/01/09 V2.0.1-beta CUMT Graduate Thesis Template]
-\def\version{2.0.1-beta}
+\def\version{2.0.2-beta}
+\def\versiondate{2025/01/15}
+\ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Graduate Thesis Template]
 
 % 错误和警告
 \newcommand\cumt@raise@error[1]{%
-    \ClassError{cumt-graduate-thesis}{#1}{}
+    \ClassError{cumtthesis}{#1}{}
 }
 \newcommand\cumt@raise@warning[1]{%
-    \ClassWarning{cumt-graduate-thesis}{#1}
+    \ClassWarning{cumtthesis}{#1}
 }
 
 % 检查版本
@@ -702,7 +703,7 @@
     \SetAlCapSkip{2bp}%
     \SetAlCapFnt{\zihao{5}}%
     \SetAlCapNameFnt{\zihao{5}}%
-    \SetAlgoCaptionSeparator{\unskip\hspace*{2em}}%
+    \SetAlgoCaptionSeparator{\unskip\hspace*{2\ccwd}}%
 }{}{}
 
 % 封面页
@@ -762,8 +763,8 @@
         （保密的学位论文在解密后适用本授权书）。\par
     }
     \vspace{40bp}
-    作者签名：\hspace{14.5em} 导师签名： \par
-    \hspace{2.5em}年\hspace{1.5em}月\hspace{1.5em}日\hspace{14em}年\hspace{1.5em}月\hspace{1.5em}日
+    作者签名：\hspace{15\ccwd}导师签名：\par
+    \hspace{2.5\ccwd}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日\hspace{14\ccwd}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日
 
     \cumt@clearpage
 }
@@ -789,7 +790,7 @@
                 {\centering\huawenxingkai\zihao{1} 中国矿业大学 \par}
                     {\centering\lishu\zihao{1} \cumt@thesis@name@full \par}
             } \\
-            \vspace{0bp}
+            \vspace{0cm}
             \parbox[c][6cm][c]{16.0cm}{
                 {\centering\setstretch{1.2}\heiti\zihao{2}\cumt@title@cn\par}
                     {\centering\setstretch{1.2}\zihao{2}\cumt@title@en\par}
@@ -833,7 +834,7 @@
     \cumt@format@symbols@cn@inplace{@cnkeywords} %
     \hangafter 1
         {\noindent \textbf{关键词：}}
-    \hangindent 3.9em
+    \hangindent 3.9\ccwd
     \@cnkeywords
 }
 
@@ -842,7 +843,7 @@
     \cumt@format@symbols@en@inplace{@enkeywords} %
     \hangafter 1
         {\noindent \textbf{Keywords:~}}
-    \hangindent 5.4em
+    \hangindent 5.4\ccwd
     \@enkeywords
 }
 
@@ -851,7 +852,7 @@
     % 中文
     \newpage
     \vspace*{-10bp}
-    {\centering\linespread{1}\zihao{-2}\heiti\bfseries 摘\quad 要\par}
+    {\centering\linespread{1}\zihao{-2}\heiti\bfseries 摘\hspace{\ccwd}要\par}
     \vspace{12bp}
 
     \phantomsection
@@ -904,7 +905,7 @@
 \newcommand\MakeCnContents{
     \newpage
     \vspace*{-10bp}
-    {\centering\linespread{1}\zihao{-2}\heiti\bfseries 目\quad 录\par}
+    {\centering\linespread{1}\zihao{-2}\heiti\bfseries 目\hspace{\ccwd}录\par}
     \vspace{12bp}
 
     \phantomsection
@@ -1106,7 +1107,7 @@
     \addcontentsline{toc}{chapter}{变量注释表}
     \addcontentsline{toe}{chapter}{List of Variables}
 
-    \vspace{-10bp}
+    \vspace{-12bp}
     \zihao{5}
     \begin{center}
         \begin{longtable}{@{}|p{3.5cm}|p{\textwidth-3.5cm-4\tabcolsep-3\arrayrulewidth}|@{}}
@@ -1198,13 +1199,13 @@
 
     \vspace{24bp}
 
-    {\zihao{-4} \hspace{0.44\textwidth} 学位论文作者签名：} \par
-    {\zihao{-4} \hspace{0.55\textwidth} 年 \qquad 月 \qquad 日}
+    {\hspace{0.44\textwidth}学位论文作者签名：} \par
+    {\hspace{0.55\textwidth}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日}
 
     \cumt@clearpage
 }
 
-\newcommand\FormatCheckbox[2]{%
+\newcommand\cumt@format@checkbox[2]{%
     \edef\cumt@tmpa{#1}
     \edef\cumt@tmpb{#2}
     \ifx\cumt@tmpa\cumt@tmpb%
@@ -1319,13 +1320,13 @@
                 \bfseries
                 % \makecell[l]{\cumt@electronic@thesis@format@cell}
                 \makecell[l]{%
-                    电子版论文提交格式 \hspace{2\ccwd}%
-                    文本（\FormatCheckbox{\cumt@electronic@thesis@format}{文本}）\ %
-                    图像（\FormatCheckbox{\cumt@electronic@thesis@format}{图像}）\ %
-                    视频（\FormatCheckbox{\cumt@electronic@thesis@format}{视频}）\ %
-                    音频（\FormatCheckbox{\cumt@electronic@thesis@format}{音频}）\ %
-            多媒体（\FormatCheckbox{\cumt@electronic@thesis@format}{多媒体}）  \\
-            \hspace{11\ccwd} 其他（\FormatCheckbox{\cumt@electronic@thesis@format}{其他}） \\
+                    电子版论文提交格式\hspace{2\ccwd}%
+                    文本（\cumt@format@checkbox{\cumt@electronic@thesis@format}{文本}）\ %
+                    图像（\cumt@format@checkbox{\cumt@electronic@thesis@format}{图像}）\ %
+                    视频（\cumt@format@checkbox{\cumt@electronic@thesis@format}{视频}）\ %
+                    音频（\cumt@format@checkbox{\cumt@electronic@thesis@format}{音频}）\ %
+            多媒体（\cumt@format@checkbox{\cumt@electronic@thesis@format}{多媒体}） \\
+            \hspace{11\ccwd}其他（\cumt@format@checkbox{\cumt@electronic@thesis@format}{其他}） \\
                     推荐格式：application/msword; application/pdf%
                 }
             } \\
@@ -1356,7 +1357,7 @@
         \vskip -1.4pt
         {
         \renewcommand\tabularxcolumn[1]{m{##1}<{\raggedright}} %更改X列格式
-        \renewcommand\arraystretch{1}
+        % \renewcommand\arraystretch{1.1}
         \zihao{5}
         \begin{tabularx}{15.05cm}{| X |}
             \hline
@@ -1421,7 +1422,7 @@
     % 五级标题[段落]（《撰写规定》无明确要求）（中文宋体，数字Times New Roman，小四号，行距固定值20磅，段前0磅，段后0磅；两端对齐，大纲5级，编号与标题之间留一个空格）
     paragraph = {
             format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
-            number     = \hspace*{-0.4em}（\arabic{paragraph}）,
+            number     = \hspace*{-0.4\ccwd}（\arabic{paragraph}）,
             aftername  = \hspace{0bp},
             indent     = 2\ccwd,
             beforeskip = 0bp,
@@ -1432,7 +1433,7 @@
     subparagraph = {
             format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
             number     = \circledtext{subparagraph},
-            aftername  = \hspace{0.1em},
+            aftername  = \hspace{0.1\ccwd},
             indent     = 2\ccwd,
             beforeskip = 0bp,
             afterskip  = 0bp,
