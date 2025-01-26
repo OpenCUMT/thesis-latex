@@ -3,7 +3,7 @@
 
 该 \LaTeX 模板按照\href{https://gs.cumt.edu.cn/info/1049/3149.htm}{《中国矿业大学研究生学位论文撰写规定及模板（2021年版）》}的要求编写（以下简称《撰写规定》）。目前支持硕士、博士毕业论文撰写（暂不支持外文学院硕士毕业论文）。
 
-\bisection{文档类}{Document Class and Options}
+\bisection{文档类}{Document Class}
 在文档开始时，需指定文档类为：
 \begin{center}
     \texttt{\textbackslash documentclass\{cumtthesis\}}
@@ -19,22 +19,22 @@
     \item \texttt{funding-on-cover}：是否在封面显示基金信息，可选 \texttt{true} 或 \texttt{false}。
     \item \texttt{title} 和 \texttt{title*}：分别设置中文标题和英文标题。
     \item \texttt{author}：设置作者姓名。
-    \item \texttt{thesis-name}：设置论文类型，如“硕士学位论文”或“博士学位论文”。
+    \item \texttt{thesis-type}：设置论文类型，如“硕士学位论文”、“博士学位论文”或“本科生毕业设计（论文）”等。
     \item \texttt{supervisor} 和 \texttt{supervisor-title}：设置导师姓名和职称。
     \item \texttt{co-supervisor} 和 \texttt{co-supervisor-title}：设置第二导师姓名和职称（选填）。
     \item \texttt{year} 和 \texttt{month}：设置论文提交的年月。
     \item \texttt{degree-applied}：设置申请学位的名称。
-    \item \texttt{affiliation}：设置培养单位。
+    \item \texttt{affiliation}：设置培养单位（学院）。
     \item \texttt{major}：设置学科专业。
     \item \texttt{field}：设置研究方向。
     \item \texttt{defense-committee-chair}：设置答辩委员会主席。
     \item \texttt{reviewer}：设置评阅人。
-    \item \texttt{security-level}：设置密级，默认为“公开”。
+    \item \texttt{security-level}：设置密级。
+    \item \texttt{confidentiality-period}：保密期（起讫日期）.
     \item \texttt{clc}：设置中图分类号。
     \item \texttt{udc}：设置 UDC 分类号（选填）。
     \item \texttt{funding}：设置资助信息，格式为 \texttt{\{<基金名称1>(编号1);<基金名称2>(编号2);...\}}。
     \item \texttt{degree-category}：设置学位类别。
-    \item \texttt{degree-level}：设置学位级别。
     \item \texttt{language}：设置论文语种，默认为“中文”。
     \item \texttt{student-id}：设置学号。
     \item \texttt{program-duration}：设置学制。
@@ -52,8 +52,8 @@
     \item \verb|\bisection{}{}|：中文、英文二级标题（节）。
     \item \verb|\subsection{}|：三级标题（小节）。
     \item \verb|\subsubsection{}|：四级标题（次小节）\footnote{《撰写规定》中未对四、五、六级标题作具体要求}。
-    \item \verb|\paragraph{}|：五级标题（段落）。默认为内嵌(Run-in)标题，可使用\verb|\paragraph*{}|实现陈列(Display)标题。
-    \item \verb|\subparagraph{}|：六级标题（小段）。默认为内嵌(Run-in)标题，可使用\verb|\subparagraph*{}|实现陈列(Display)标题。
+    \item \verb|\paragraph{}|：五级标题（段落）。默认为内嵌（Run-in）标题，可使用\verb|\paragraph*{}|实现陈列（Display）标题。
+    \item \verb|\subparagraph{}|：六级标题（小段）。默认为内嵌（Run-in）标题，可使用\verb|\subparagraph*{}|实现陈列（Display）标题。
 \end{itemize}
 
 \bisection{内容和章节}{Contents and Chapters}
@@ -65,9 +65,6 @@
 \end{itemize}
 
 封面与扉页信息来自于元数据（见\ref{section: metadata configuration}），因此请确保所有必要字段都已正确填写。
-
-\subsection{学位论文使用授权声明}
-通过\verb|\MakeCopyrightPage|命令生成。
 
 \subsection{致谢}
 致谢部分放置在\texttt{acknowledgements.tex}，使用\texttt{acknowledgements}环境。
@@ -95,7 +92,7 @@
 \end{itemize}
 
 \subsection{变量注释表}
-变量注释表放置在\texttt{denotation.tex}，使用\texttt{denotation}环境，并使用\verb|\Variable{}{}|命令依次添加符号和解释。
+变量注释表放置在\texttt{denotation.tex}，使用\texttt{denotation}环境，并使用\verb|\Variable{}{}|命令添加符号和解释。
 
 \subsection{正文内容}
 正文部分每个章节应保存为单独的.tex文件，并通过\verb|\input{}|命令引入主文档中。
@@ -112,11 +109,25 @@
 \subsection{简历}
 简历部分放置在\texttt{resume.tex}，需使用\texttt{resume}环境\footnote{使用\texttt{\textbackslash resumesection{}}命令添加小节标题。}。
 
-\subsection{原创性声明}
-原创性声明页可通过\verb|\MakeDeclarationPage|命令生成。
+（此项仅限研究生使用）
+
+\subsection{各种声明页}
+\begin{itemize}[itemsep=2pt,topsep=5pt]
+  \sloppy
+  \item \verb|\MakeGraduateCopyrightDeclarationPage|：研究生授权声明。
+  \item \verb|\MakeGraduateOriginalityDeclarationPage|：研究生原创性声明。
+  \item \verb|\MakeUndergraduateDeclarationPages|：本科生原创性声明、诚信承诺书、使用授权声明。 
+\end{itemize}
 
 \subsection{学位论文数据集}
 学位论文数据集页面由\verb|\MakeDataCollectionPage|命令生成，其中包含了论文的各项元数据信息，如密级、分类号、资助项目等。
+
+（此项仅限研究生使用）
+
+\subsection{评阅表格}
+本科毕业设计（论文）任务书、指导教师评阅书、评阅教师评阅书、答辩及综合成绩表格放置在\texttt{undergraduate.tex}。
+
+（此项仅限本科生使用）
 
 \bisection{浮动体}{Floats}
 \subsection{图}
