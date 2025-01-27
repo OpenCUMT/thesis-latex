@@ -15,7 +15,7 @@
 在文档的导言区，使用 \texttt{\textbackslash cumtsetup\{\}} 配置论文的元数据。以下是一些关键配置项：
 
 \begin{itemize}
-    \item \texttt{output}：设置输出格式，可选 \texttt{electronic}（电子版）或 \texttt{print}（打印版）。
+    \item \texttt{output}：设置输出格式，可选 \texttt{electronic}（电子版）、\texttt{print}（打印版）或\texttt{blindreview}（盲审版）\footnote{盲审版将隐藏学校、人名等敏感信息，并隐去致谢部分}。
     \item \texttt{funding-on-cover}：是否在封面显示基金信息，可选 \texttt{true} 或 \texttt{false}。
     \item \texttt{title} 和 \texttt{title*}：分别设置中文标题和英文标题。
     \item \texttt{author}：设置作者姓名。
@@ -108,6 +108,8 @@
 
 \subsection{简历}
 简历部分放置在\texttt{resume.tex}，需使用\texttt{resume}环境\footnote{使用\texttt{\textbackslash resumesection{}}命令添加小节标题。}。
+
+请使用\verb|\SensitiveInfo{}|包裹敏感信息，以配合盲审模式使用。若无需盲审模式，请忽略。
 
 （此项仅限研究生使用）
 

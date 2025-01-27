@@ -4,6 +4,14 @@
 %  - 毕业设计（论文）评阅教师评阅书
 %  - 毕业设计（论文）答辩及综合成绩
 
+
+% 一些可能用到的宏
+% \cumt@title@cn - 论文题目
+% \cumt@author - 作者姓名
+% \cumt@affiliation - 单位（学院）
+% \cumt@major - 专业
+% \cumt@student@id - 学号
+
 \makeatletter
 %============================================================================ 表1
 % 中国矿业大学本科毕业设计（论文）任务书
@@ -13,11 +21,11 @@
     \renewcommand\arraystretch{1.667}
     \begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}m{2.0cm}|X|>{\centering\arraybackslash}m{2.0cm}|X|}
         \hline
-        \multicolumn{4}{|l|}{设计（论文）题目： \texorpdfstring{\cumt@title@cn}{}} \\
+        \multicolumn{4}{|l|}{设计（论文）题目： \cumt@title@cn} \\
         \hline
-        学院 & \texorpdfstring{\cumt@affiliation}{} & 专业年级 & \texorpdfstring{\cumt@major}{} \\
+        学院 & \cumt@affiliation & 专业年级 & \cumt@major \\
         \hline
-        学生姓名 & \texorpdfstring{\cumt@author}{} & 学号 & \texorpdfstring{\cumt@student@id}{} \\
+        学生姓名 & \cumt@author & 学号 & \cumt@student@id \\
         \hline
         \multicolumn{4}{|l|}{%
             \parbox[t][9cm][l]{\textwidth-2\ccwd}{%
@@ -60,7 +68,7 @@
         \hline
         学生姓名 & \cumt@author & 学号 & \cumt@student@id \\
         \hline
-        设计（论文）题目 & \multicolumn{3}{|c|}{\cumt@title@cn} \\
+        设计（论文）题目 & \multicolumn{3}{c|}{\cumt@title@cn} \\
         \hline
         \multicolumn{4}{|l|}{%
             \parbox[t][20cm][l]{\textwidth-2\ccwd}{%
@@ -71,9 +79,9 @@
                 %*************************
 
                 \vfill
-                成绩：**\hspace{10\ccwd}指导教师签字：% \includegraphics[width=2.0cm]{path/to/signature.png}
+                成绩：\hspace{12\ccwd}指导教师签字：% \includegraphics[width=2.0cm]{path/to/signature.png}
 
-                \hspace{20\ccwd} ****年**月**日
+                \hspace{20\ccwd} \hspace{2\ccwd}年\hspace{\ccwd}月\hspace{\ccwd}日
                 \vspace{12bp}
             }
         } \\
@@ -94,7 +102,7 @@
         \hline
         学生姓名 & \cumt@author & 学号 & \cumt@student@id \\
         \hline
-        设计（论文）题目 & \multicolumn{3}{|c|}{\cumt@title@cn} \\
+        设计（论文）题目 & \multicolumn{3}{c|}{\cumt@title@cn} \\
         \hline
         \multicolumn{4}{|l|}{%
             \parbox[t][20cm][l]{\textwidth-2\ccwd}{%
@@ -105,9 +113,9 @@
                 %*************************
 
                 \vfill
-                成绩：**\hspace{10\ccwd}评阅教师签字：% \includegraphics[width=2.0cm]{path/to/signature.png}
+                成绩：\hspace{12\ccwd}评阅教师签字：% \includegraphics[width=2.0cm]{path/to/signature.png}
 
-                \hspace{20\ccwd} ****年**月**日
+                \hspace{20\ccwd} \hspace{2\ccwd}年\hspace{\ccwd}月\hspace{\ccwd}日
                 \vspace{12bp}
             }
         } \\
@@ -149,9 +157,9 @@
                 % 在此处填写<答辩委员会评语>
                 %******************************
                 \vfill
-                成绩：**\hspace{10\ccwd}答辩委员会主任签字：% \includegraphics[width=2.0cm]{path/to/signature.png}
+                成绩：\hspace{12\ccwd}答辩委员会主任签字：% \includegraphics[width=2.0cm]{path/to/signature.png}
 
-                \hspace{20\ccwd} ****年**月**日
+                \hspace{20\ccwd} \hspace{2\ccwd}年\hspace{\ccwd}月\hspace{\ccwd}日
                 \vspace{12bp}
             }
         } \\
@@ -175,7 +183,7 @@
                 \vfill
                 \hspace{15\ccwd}学院领导签字：% \includegraphics[width=2.0cm]{path/to/signature.png}
                 \vfill
-                \hspace{17\ccwd} ****年**月**日
+                \hspace{17\ccwd} \hspace{2\ccwd}年\hspace{\ccwd}月\hspace{\ccwd}日
                 \vfill
             }%
         } \\

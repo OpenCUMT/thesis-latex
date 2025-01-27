@@ -47,7 +47,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.1.0-beta}
+\def\version{2.2.0-beta}
 \def\versiondate{2025/01/15}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
@@ -67,7 +67,7 @@
 % XeLaTeX
 \RequirePackage{iftex} % 检查 TeX 引擎
 \ifXeTeX\else
-    \cumt@raise@error{XeLaTeX is required.}
+    \cumt@raise@error{XeLaTeX is required}
 \fi
 
 % 处理键值选项
@@ -132,8 +132,10 @@
     }%
 }
 
-\newcommand\cumt@option@hook[2]{%
-    \expandafter\g@addto@macro\csname cumt@keydef@#1@code\endcsname{#2}%
+% 添加钩子函数（带*立即执行）
+\NewDocumentCommand\cumt@option@hook{s m m}{%
+    \expandafter\g@addto@macro\csname cumt@keydef@#2@code\endcsname{#3}%
+    \IfBooleanTF{#1}{#3}{}
 }
 
 \newcommand\cumt@define@keys[1]{%
@@ -147,6 +149,7 @@
             choices={
                     print,
                     electronic,
+                    blindreview,
                 },
         },
     funding-on-cover={
@@ -359,12 +362,17 @@
 }
 \ExplSyntaxOff
 
+% 学位级别
 \def\cumt@degree@level@doctor{博士}
 \def\cumt@degree@level@master{硕士}
 \def\cumt@degree@level@bachelor{学士}
+\newif\ifcumt@if@graduate
+\cumt@if@graduatetrue
+\newif\ifcumt@if@bachelor
+\cumt@if@bachelorfalse
+\def\cumt@degree@level{\cumt@degree@level@master}
+\def\cumt@thesis@type@en{Thesis}
 \newcommand\cumt@check@degree{
-    \newif\ifcumt@if@graduate\cumt@if@graduatetrue
-    \newif\ifcumt@if@bachelor\cumt@if@bachelorfalse
     \IfSubStr{\cumt@thesis@type@full}{博士}
     { 
         \gdef\cumt@degree@level{\cumt@degree@level@doctor}
@@ -390,12 +398,46 @@
     }
 }
 
+% 盲审模式
+\newif\ifcumt@if@blindreview
+\cumt@if@blindreviewfalse
+\NewDocumentCommand{\SetSensitiveInfo}{m O{***}}{
+    \ifcumt@if@blindreview
+        \@namedef{#1}{#2}
+    \fi
+}
+\NewDocumentCommand{\SensitiveInfo}{m O{***}}{
+    \ifcumt@if@blindreview
+        #2
+    \else
+        #1
+    \fi
+}
+\newcommand\cumt@cumt@name{\SensitiveInfo{中国矿业大学}}
+\newcommand\cumt@cumt@code{\SensitiveInfo{10290}}
+\newcommand\cumt@cumt@address{\SensitiveInfo{江苏省徐州市}}
+\newcommand\cumt@cumt@postcode{\SensitiveInfo{221116}}
+
 % 处理元数据
+\cumt@option@hook*{output}{
+    \IfStrEq{\cumt@output}{blindreview}{
+        \cumt@if@blindreviewtrue
+    }{
+        \cumt@if@blindreviewfalse
+    }
+}
 \cumt@option@hook{title}{\title{\cumt@title}}
-\cumt@option@hook{author}{\author{\cumt@author}}
-\cumt@option@hook{year}{\cumt@format@digits@arabic@inplace{cumt@year}}
-\cumt@option@hook{month}{\cumt@format@digits@arabic@inplace{cumt@month}}
-\cumt@option@hook{funding-on-cover}{
+\cumt@option@hook{author}{
+    \author{\cumt@author}
+    \SetSensitiveInfo{cumt@author}
+}
+\cumt@option@hook*{year}{
+    \cumt@format@digits@arabic@inplace{cumt@year}
+}
+\cumt@option@hook*{month}{
+    \cumt@format@digits@arabic@inplace{cumt@month}
+}
+\cumt@option@hook*{funding-on-cover}{
     \newif\ifcumt@if@funding@on@cover
     \IfStrEq{\cumt@funding@on@cover}{true}{
         \cumt@if@funding@on@covertrue
@@ -403,13 +445,33 @@
         \cumt@if@funding@on@coverfalse
     }
 }
-\cumt@option@hook{funding}{
+\cumt@option@hook*{funding}{
     \cumt@replace@string@inplace{cumt@funding}{;}{；}
     \gdef\cumt@funding@list{\cumt@funding}
     \cumt@format@funding@list@inplace{cumt@funding@list}
+    \SetSensitiveInfo{cumt@funding}
+    \SetSensitiveInfo{cumt@funding@list}
 }
 \cumt@option@hook{thesis-type}{
     \cumt@check@degree
+}
+\cumt@option@hook*{supervisor}{
+    \SetSensitiveInfo{cumt@supervisor@name}
+}
+\cumt@option@hook*{co-supervisor}{
+    \SetSensitiveInfo{cumt@cosupervisor@name}
+}
+\cumt@option@hook*{affiliation}{
+    \SetSensitiveInfo{cumt@affiliation}
+}
+\cumt@option@hook*{student-id}{
+    \SetSensitiveInfo{cumt@student@id}
+}
+\cumt@option@hook*{defense-committee-chair}{
+    \SetSensitiveInfo{cumt@defense@committee@chair}
+}
+\cumt@option@hook*{defense-committee-members}{
+    \SetSensitiveInfo{cumt@defense@committee@members}
 }
 
 % 合并多个导师
@@ -572,6 +634,7 @@
 \RequirePackage{fancyhdr} % 自定义页眉和页脚
 \RequirePackage{listings} % 代码块支持
 \RequirePackage{xpatch} % 补丁命令
+\RequirePackage{verbatim} % 注释
 
 % 矿大蓝 RGB:30,50,100 (#1e3264)
 \definecolor{cumtblue}{RGB}{30,50,100}
@@ -802,26 +865,30 @@
     \newgeometry{left=2.0cm,right=2.0cm,top=2.54cm,bottom=2.54cm}
 
     % LOGO & 基金
-    \ifcumt@if@bachelor
-        \begin{minipage}[t][5cm]{0.9\textwidth}
-            \hspace*{0.34cm}
-            \includegraphics[height=1.96cm]{Assets/Logos/cumt-logo-grouped.pdf}
-            \vfill
-        \end{minipage}
-    \else 
-        \hspace*{1.17cm}
-        \begin{minipage}[t][5cm]{0.32\textwidth}
-            \vspace{0bp} % 留着别动
-            \includegraphics[width=3.26cm]{Assets/Logos/cumt-logo.pdf}
-            \vfill
-        \end{minipage}
-        \hfill
-        \ifcumt@if@funding@on@cover
-            \begin{minipage}[t][5cm]{0.5\textwidth}
-                \vspace{5bp}
-                {\heiti\zihao{5}\cumt@funding@list}
+    \ifcumt@if@blindreview
+        \vspace*{5cm}
+    \else
+        \ifcumt@if@bachelor
+            \begin{minipage}[t][5cm]{0.9\textwidth}
+                \hspace*{0.34cm}
+                \includegraphics[height=1.96cm]{Assets/Logos/cumt-logo-grouped.pdf}
                 \vfill
             \end{minipage}
+        \else 
+            \hspace*{1.17cm}
+            \begin{minipage}[t][5cm]{0.32\textwidth}
+                \vspace{0bp} % 留着别动
+                \includegraphics[width=3.26cm]{Assets/Logos/cumt-logo.pdf}
+                \vfill
+            \end{minipage}
+            \hfill
+            \ifcumt@if@funding@on@cover
+                \begin{minipage}[t][5cm]{0.5\textwidth}
+                    \vspace{5bp}
+                    {\heiti\zihao{5}\cumt@funding@list}
+                    \vfill
+                \end{minipage}
+            \fi
         \fi
     \fi
     \begin{center}
@@ -851,7 +918,7 @@
         \vfill
 
         \parbox[c][4cm][c]{\textwidth}{
-            {\centering\kaiti\zihao{-2} 中国矿业大学 \par}
+            {\centering\kaiti\zihao{-2} \cumt@cumt@name \par}
             {\centering\kaiti\zihao{-2}\zhdigits{\cumt@year}年\zhnumber{\cumt@month}月 \par}
         }
     \end{center}
@@ -862,12 +929,12 @@
 % [研究生]使用授权声明页
 \newcommand\MakeGraduateCopyrightDeclarationPage{
     \ifcumt@if@bachelor
-        \cumt@raise@error{The command "\string\MakeGraduateCopyrightDeclarationPage" is only applicable to graduate students. Undergraduate students should use "\string\MakeUndergraduateDeclarationPages" instead.}
+        \cumt@raise@error{The command "\string\MakeGraduateCopyrightDeclarationPage" is only applicable to graduate students. Undergraduate students should use "\string\MakeUndergraduateDeclarationPages" instead}
     \fi
     \chapter*{学位论文使用授权声明}
     {   \kaiti
         \setlength{\baselineskip}{20bp}
-        本人完全了解中国矿业大学有关保留、使用学位论文的规定，同意本人所撰写的学位论文的使用授权按照学校的管理规定处理：\par
+        本人完全了解 \cumt@cumt@name 有关保留、使用学位论文的规定，同意本人所撰写的学位论文的使用授权按照学校的管理规定处理：\par
         作为申请学位的条件之一，学位论文著作权拥有者须授权所在学校拥有学位论文的部分使用权，即：\ding{172}学校档案馆和图书馆有权保留学位论文的纸质版和电子版，可以使用影印、缩印或扫描等复制手段保存和汇编学位论文；\ding{173}为教学和科研目的，学校档案馆和图书馆可以将公开的学位论文作为资料在档案馆、图书馆等场所或在校园网上供校内师生阅读、浏览。另外，根据有关法规，同意中国国家图书馆保存研究生学位论文。\par
         （保密的学位论文在解密后适用本授权书）。\par
     }
@@ -882,13 +949,13 @@
 % [研究生]原创声明
 \newcommand\MakeGraduateOriginalityDeclarationPage{
     \ifcumt@if@bachelor
-        \cumt@raise@error{The command "\string\MakeGraduateOriginalityDeclarationPage" is only applicable to graduate students. Undergraduate students should use "\string\MakeUndergraduateDeclarationPages" instead.}
+        \cumt@raise@error{The command "\string\MakeGraduateOriginalityDeclarationPage" is only applicable to graduate students. Undergraduate students should use "\string\MakeUndergraduateDeclarationPages" instead}
     \fi
 
     \bichapter*{学位论文原创性声明}{Declaration of \cumt@thesis@type@en \ Originality}
     {
         \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
-        本人郑重声明：所呈交的学位论文《 \cumt@title@cn 》，是本人在导师指导下，在中国矿业大学攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。对本文的研究做出贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
+        本人郑重声明：所呈交的学位论文《 \cumt@title@cn 》，是本人在导师指导下，在 \cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。对本文的研究做出贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
     }
 
     \vspace{24bp}
@@ -905,20 +972,20 @@
     \begin{center}
         \begin{tabularx}{\textwidth}{|X|}
             \hline
-            \parbox[c][2.2cm][c]{16.0cm}{
+            \parbox[c][2.2cm][c]{16.3cm}{
                 \ifcumt@if@graduate
                     \renewcommand\arraystretch{1.3}
                     {
                         \zihao{4}
                         \begin{tabularx}{16.0cm}{XX}
-                            \hspace{-1cm}\makebox[2.5cm]{中 \hfill 图 \hfill 分 \hfill 类 \hfill 号}\uline{\makebox[3.8cm]{\centering \cumt@clc}} & \makebox[2cm]{学 \hfill 校 \hfill 代 \hfill 码}\uline{\makebox[4cm]{\centering 10290 }} \\
+                            \hspace{-1cm}\makebox[2.5cm]{中 \hfill 图 \hfill 分 \hfill 类 \hfill 号}\uline{\makebox[3.8cm]{\centering \cumt@clc}} & \makebox[2cm]{学 \hfill 校 \hfill 代 \hfill 码}\uline{\makebox[4cm]{\centering \cumt@cumt@code }} \\
                             \hspace{-1cm}\makebox[1.3cm]{\hfill UDC}\uline{\makebox[5.0cm]{\centering \cumt@udc}} & \makebox[2cm]{密 \hfill 级}\uline{\makebox[4cm]{\centering \cumt@security@level }}
                         \end{tabularx}
                     }
                 \fi
             } \\
             \parbox[c][5cm][c]{16.0cm}{
-                {\centering\huawenxingkai\zihao{1} 中国矿业大学 \par}
+                {\centering\huawenxingkai\zihao{1} \cumt@cumt@name \par}
                 {\centering\lishu\zihao{1} \cumt@thesis@type@full \par}
             } \\
             \vspace{0cm}
@@ -958,13 +1025,13 @@
 % [本科生]毕业设计（论文）原创性声明、本科毕业设计（论文）诚信承诺书、毕业设计（论文）使用授权声明
 \newcommand\MakeUndergraduateDeclarationPages{
     \ifcumt@if@graduate
-        \cumt@raise@error{The command "\string\MakeUndergraduateDeclarationPages" is only applicable to undergraduate students. Graduate students should use "\string\MakeGraduateCopyrightDeclarationPage" instead.}
+        \cumt@raise@error{The command "\string\MakeUndergraduateDeclarationPages" is only applicable to undergraduate students. Graduate students should use "\string\MakeGraduateCopyrightDeclarationPage" instead}
     \fi
 
     \chapter*{毕业设计（论文）原创性声明}
     {
         \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
-        本人郑重声明：所呈交的毕业设计（论文）《 \cumt@title@cn 》，是本人在指导教师指导下，在中国矿业大学攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。本人完全意识到本声明的法律结果由本人承担。
+        本人郑重声明：所呈交的毕业设计（论文）《 \cumt@title@cn 》，是本人在指导教师指导下，在 \cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。本人完全意识到本声明的法律结果由本人承担。
     }
 
     \vspace{24bp}
@@ -975,7 +1042,7 @@
     \cumt@clearpage
 
     \vspace*{0bp}
-    {\centering\linespread{1}\zihao{-2}\heiti\bfseries 中国矿业大学\par}
+    {\centering\linespread{1}\zihao{-2}\heiti\bfseries \cumt@cumt@name\par}
     \vspace{5bp}
     {\centering\linespread{1}\zihao{-2}\heiti\bfseries 本科毕业设计（论文）诚信承诺书\par}
     \vspace{5bp}
@@ -987,13 +1054,13 @@
         {\hspace{0.55\textwidth}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日}\par
     }
     \vspace{40bp}
-    {\centering\linespread{1}\zihao{-2}\heiti\bfseries 中国矿业大学\par}
+    {\centering\linespread{1}\zihao{-2}\heiti\bfseries \cumt@cumt@name\par}
     \vspace{5bp}
     {\centering\linespread{1}\zihao{-2}\heiti\bfseries 毕业设计（论文）使用授权声明\par}
     \vspace{5bp}
     {   \kaiti
         \setlength{\baselineskip}{20bp} % 固定行间距20磅
-        本人完全了解中国矿业大学有关收集、保留和使用本人所送交的毕业设计（论文）的规定，即：本科生在校攻读学位期间毕业设计（论文）工作的知识产权单位属中国矿业大学。学校有权保留并向国家有关部门或机构送交毕业设计（论文）的复印件和电子版，允许论文被查阅和借阅，可以公布论文的全部或部分内容，可以采用影印、缩印或扫描等复制手段保存、汇编论文。保密的论文在解密后适用本声明。\par
+        本人完全了解 \cumt@cumt@name 有关收集、保留和使用本人所送交的毕业设计（论文）的规定，即：本科生在校攻读学位期间毕业设计（论文）工作的知识产权单位属 \cumt@cumt@name 。学校有权保留并向国家有关部门或机构送交毕业设计（论文）的复印件和电子版，允许论文被查阅和借阅，可以公布论文的全部或部分内容，可以采用影印、缩印或扫描等复制手段保存、汇编论文。保密的论文在解密后适用本声明。\par
         论文涉密情况：\par
         \IfStrEq{\cumt@security@level}{公开}{
             \cumt@checkedbox 不保密\par
@@ -1011,11 +1078,18 @@
 
 % 致谢
 \newenvironment{acknowledgements}{%
-    \chapter*{致谢}
-    \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
-}
-{%
-    \cumt@clearpage
+    \ifcumt@if@blindreview
+        \comment
+    \else
+        \chapter*{致谢}
+        \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
+    \fi
+}{%
+    \ifcumt@if@blindreview
+        \endcomment
+    \else
+        \cumt@clearpage
+    \fi
 }
 
 \newcommand\cnkeywords[1]{
@@ -1367,7 +1441,7 @@
 % [研究生]论文数据集
 \newcommand\MakeDataCollectionPage{
     \ifcumt@if@bachelor
-        \cumt@raise@error{The command "\string\MakeDataCollectionPage" is only applicable to graduate students. Undergraduate students DO NOT have this part.}
+        \cumt@raise@error{The command "\string\MakeDataCollectionPage" is only applicable to graduate students. Undergraduate students DO NOT have this part}
     \fi
     \newgeometry{left=1.5cm,right=1.5cm,top=2.54cm,bottom=2.54cm}
     \fancyhfoffset[L]{1.5cm}
@@ -1401,7 +1475,7 @@
     \else\ifdim\fundinglength<2300pt
         \renewcommand\arraystretch{1.0}
     \else
-        \cumt@raise@error{The funding list exceeds the max length.}
+        \cumt@raise@error{The funding list exceeds the max length}
     \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
 
     \begin{center}
@@ -1421,7 +1495,7 @@
         \begin{tabularx}{15.05cm}{|X|X|X|X|}
             \hline
             {\bfseries 学位授予单位名称$\bm \ast$} & {\bfseries 学位授予单位代码$\bm \ast$} & {\bfseries 学位类别$\bm \ast$} & {\bfseries 学位级别$\bm \ast$} \\ \hline
-            中国矿业大学                         & 10290                          & {\cumt@degree@category}    & {\cumt@degree@level}       \\
+            \cumt@cumt@name & \cumt@cumt@code  & {\cumt@degree@category}    & {\cumt@degree@level}       \\
             \hline
         \end{tabularx}
         }
@@ -1440,11 +1514,15 @@
         \zihao{5}
         \begin{tabularx}{15.05cm}{|X|X|X|X|}
             \hline
-            {\bfseries 作者姓名$\bm \ast$}   & { \cumt@author }             & {\bfseries 学号$\bm \ast$} & {\cumt@student@id}          \\\hline
-            {\bfseries 培养单位名称$\bm \ast$} & {\bfseries 培养单位代码$\bm \ast$} & {\bfseries 培养单位地址}       & {\bfseries 邮编}              \\\hline
-            中国矿业大学                       & 10290                        & 江苏省徐州市                   & 221116                      \\ \hline
-            {\bfseries 学科专业$\bm \ast$}   & {\bfseries 研究方向$\bm \ast$}   & {\bfseries 学制$\bm \ast$} & {\bfseries 学位授予年$\bm \ast$} \\ \hline
-            { \cumt@major }              & { \cumt@field }              & {\cumt@program@duration} & {\cumt@year}                \\
+            {\bfseries 作者姓名$\bm \ast$}   & { \cumt@author } & {\bfseries 学号$\bm \ast$} & {\cumt@student@id}  \\ 
+            \hline
+            {\bfseries 培养单位名称$\bm \ast$} & {\bfseries 培养单位代码$\bm \ast$} & {\bfseries 培养单位地址} & {\bfseries 邮编}  \\ 
+            \hline
+            \cumt@cumt@name & \cumt@cumt@code  & \cumt@cumt@address & \cumt@cumt@postcode \\ 
+            \hline
+            {\bfseries 学科专业$\bm \ast$}   & {\bfseries 研究方向$\bm \ast$}   & {\bfseries 学制$\bm \ast$} & {\bfseries 学位授予年$\bm \ast$} \\ 
+            \hline
+            { \cumt@major }  & { \cumt@field }  & {\cumt@program@duration} & {\cumt@year} \\
             \hline
         \end{tabularx}
         }
@@ -1582,7 +1660,7 @@
             afterskip  = 6bp,
             runin      = false,
         },
-    % 五级标题[段落]（《撰写规定》无明确要求）（中文宋体，数字Times New Roman，小四号，行距固定值20磅，段前0磅，段后0磅；两端对齐，大纲5级，编号与标题之间留一个空格）
+    % 五级标题[段落]（《撰写规定》无明确要求）（中文宋体，数字Times New Roman，小四号，行距固定值20磅，段前0磅，段后0磅；两端对齐，大纲5级）
     paragraph = {
             format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
             number     = \hspace*{-0.4\ccwd}（\arabic{paragraph}）,
@@ -1592,7 +1670,7 @@
             afterskip  = 0bp,
             runin      = true,
         },
-    % 六级标题[小段]（《撰写规定》无明确要求）（中文宋体，数字Times New Roman，小四号，行距固定值20磅，段前0磅，段后0磅；两端对齐，大纲6级，编号与标题之间留一个空格）
+    % 六级标题[小段]（《撰写规定》无明确要求）（中文宋体，数字Times New Roman，小四号，行距固定值20磅，段前0磅，段后0磅；两端对齐，大纲6级）
     subparagraph = {
             format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
             number     = \circledtext{subparagraph},
@@ -1626,7 +1704,7 @@
         \vspace*{12bp}
     }
     {% 
-        \cumt@raise@error{Use "\string\bichapter{title-CN}{title-EN}" instead.}
+        \cumt@raise@error{Use "\string\bichapter{title-CN}{title-EN}" instead}
     }
 }
 \NewDocumentCommand\bichapter{s m m}{%
