@@ -11,12 +11,12 @@
 > [Overleaf模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg)将在近期同步更新
 
 ## 编译文档
-### Overleaf
+### 1. Overleaf
 
 使用[Overleaf模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg)
 
 
-### 本地编译
+### 2. 本地编译
 
 - 编译论文 `thesis.pdf`：
    ```
