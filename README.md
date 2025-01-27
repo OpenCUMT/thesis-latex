@@ -1,5 +1,6 @@
-[![GitHub commits](https://img.shields.io/github/commits-since/senli1073/cumtthesis/latest)](https://github.com/senli1073/cumtthesis/commits/master)
-[![GitHub release](https://img.shields.io/github/v/release/senli1073/cumtthesis/)](https://github.com/senli1073/cumtthesis/releases/latest)
+![Last Commit](https://img.shields.io/github/last-commit/senli1073/cumtthesis)]
+[![GitHub release](https://img.shields.io/github/release/senli1073/cumtthesis/)](https://github.com/senli1073/cumtthesis/releases/latest)
+[![License](https://img.shields.io/github/license/senli1073/cumtthesis)](https://github.com/senli1073/cumtthesis/blob/master/README.md)
 
 # 中国矿业大学研究生学位论文 LaTeX 模板
 
