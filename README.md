@@ -1,4 +1,4 @@
-[![GitHub commits](https://img.shields.io/github/commits-since/senli1073/cumtthesis/latest)](https://github.com/senli1073/cumtthesis/commits/main)
+[![GitHub commits](https://img.shields.io/github/commits-since/senli1073/cumtthesis/latest)](https://github.com/senli1073/cumtthesis/commits/master)
 [![GitHub release](https://img.shields.io/github/v/release/senli1073/cumtthesis/)](https://github.com/senli1073/cumtthesis/releases/latest)
 
 # 中国矿业大学研究生学位论文 LaTeX 模板
