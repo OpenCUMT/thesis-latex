@@ -47,7 +47,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.2.0-beta}
+\def\version{2.2.1-beta}
 \def\versiondate{2025/01/15}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
@@ -366,12 +366,8 @@
 \def\cumt@degree@level@doctor{博士}
 \def\cumt@degree@level@master{硕士}
 \def\cumt@degree@level@bachelor{学士}
-\newif\ifcumt@if@graduate
-\cumt@if@graduatetrue
-\newif\ifcumt@if@bachelor
-\cumt@if@bachelorfalse
-\def\cumt@degree@level{\cumt@degree@level@master}
-\def\cumt@thesis@type@en{Thesis}
+\newif\ifcumt@if@graduate\cumt@if@graduatetrue
+\newif\ifcumt@if@bachelor\cumt@if@bachelorfalse
 \newcommand\cumt@check@degree{
     \IfSubStr{\cumt@thesis@type@full}{博士}
     { 
@@ -399,8 +395,7 @@
 }
 
 % 盲审模式
-\newif\ifcumt@if@blindreview
-\cumt@if@blindreviewfalse
+\newif\ifcumt@if@blindreview\cumt@if@blindreviewfalse
 \NewDocumentCommand{\SetSensitiveInfo}{m O{***}}{
     \ifcumt@if@blindreview
         \@namedef{#1}{#2}
@@ -452,7 +447,7 @@
     \SetSensitiveInfo{cumt@funding}
     \SetSensitiveInfo{cumt@funding@list}
 }
-\cumt@option@hook{thesis-type}{
+\cumt@option@hook*{thesis-type}{
     \cumt@check@degree
 }
 \cumt@option@hook*{supervisor}{
