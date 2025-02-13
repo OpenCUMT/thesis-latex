@@ -14,11 +14,7 @@
 
 ## 编译文档
 
-### 1. Overleaf 编译
-
-直接使用 [Overleaf 模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg)进行在线编译。
-
-### 2. 本地编译
+### 1. 本地编译
 
 - **编译论文** `thesis.pdf`：
    ```bash
@@ -29,6 +25,10 @@
    ```bash
    latexmk -c
    ```
+
+### 2. Overleaf 编译
+
+直接使用 [Overleaf 模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg)进行在线编译。
 
 ## 反馈问题
 
@@ -89,7 +89,7 @@
 - 修复图表中文标题字号为小四的问题
 - 修改参考文献条目间距
 
-### 2024.08.22 V0.3.1
+### 2023.08.22 V0.3.1
 - 调整行间距及段间距
 - 修改封面参数
 
