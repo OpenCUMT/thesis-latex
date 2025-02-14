@@ -1,0 +1,55 @@
+% [博士生]博士论文创新性评价
+% 用于双盲评审
+
+
+
+% 可能用到的宏和命令
+% \cumt@title@cn - 论文题目
+% \cumt@clearpage - 根据输出模式清页
+
+% 博士论文创新性评价
+% 创新点应与“研究生培养管理信息系统”中填写的一致，每个创新点应控制在 100 字以内。
+\makeatletter
+\newgeometry{left=2.54cm,right=2.54cm,top=2.54cm,bottom=2.54cm}
+\chapter*{\zihao{3}博士论文创新性评价}
+\begin{center}
+{%  
+    \renewcommand\arraystretch{1.667}
+    \zihao{-4}
+    \begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}m{1.5cm}|X|}
+        \hline
+        \multicolumn{2}{|l|}{\zihao{4}\bfseries 论文题目： \cumt@title@cn} \\
+        \hline
+        {\zihao{5}\bfseries 序号} & {\zihao{4}\bfseries 作者自述论文中主要的创新点} \\
+        \hline
+        \parbox[c][4.75cm][c]{\linewidth}{\centering 1\par} & \parbox[c][4.25cm][c]{\linewidth}{%
+                %*******************
+                % 在此处填写<创新点1>
+                旋流－静态微泡浮选是一种具有我国自主知识产权的新型柱式分选方法与设备。特有的旋流场结构以及在煤炭分选方面的成功应用，为浮选柱技术在我国矿物分选方面的拓展奠定了良好的基础。
+                %*******************
+            } \\ 
+        \hline
+        \parbox[c][4.75cm][c]{\linewidth}{\centering 2\par} & \parbox[c][4.25cm][c]{\linewidth}{%
+                %*******************
+                % 在此处填写<创新点2>
+                %*******************
+            } \\
+        \hline
+        \parbox[c][4.75cm][c]{\linewidth}{\centering 3\par} & \parbox[c][4.25cm][c]{\linewidth}{%
+                %*******************
+                % 在此处填写<创新点3>
+                %*******************
+            } \\
+        \hline
+        \parbox[c][4.75cm][c]{\linewidth}{\centering 4\par} & \parbox[c][4.25cm][c]{\linewidth}{%
+                %*******************
+                % 在此处填写<创新点4>
+                %*******************
+            } \\
+        \hline
+    \end{tabularx}
+
+}
+\end{center}
+\cumt@clearpage
+\restoregeometry

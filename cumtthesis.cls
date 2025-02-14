@@ -47,8 +47,8 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.2.1-beta}
-\def\versiondate{2025/01/15}
+\def\version{2.3.0-beta}
+\def\versiondate{2025/02/14}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
 % 错误和警告
@@ -150,6 +150,7 @@
                     print,
                     electronic,
                     blindreview,
+                    inspection,
                 },
         },
     funding-on-cover={
@@ -215,6 +216,22 @@
     field={
             name=field,
             default= ,
+        },
+    first-level-discipline-code = {
+        name=first@level@discipline@code,
+        default= ,
+        },
+    first-level-discipline-name = {
+        name=first@level@discipline@name,
+        default= ,
+        },
+    second-level-discipline-code = {
+        name=second@level@discipline@code,
+        default= ,
+        },
+    second-level-discipline-name = {
+        name=second@level@discipline@name,
+        default= ,
         },
     defense-committee-chair={
             name=defense@committee@chair,
@@ -394,18 +411,28 @@
     }
 }
 
-% 盲审模式
-\newif\ifcumt@if@blindreview\cumt@if@blindreviewfalse
+% 抽检模式/盲审模式
+\newif\ifcumt@if@output@inspection\cumt@if@output@inspectionfalse
+\newif\ifcumt@if@output@blindreview\cumt@if@output@blindreviewfalse
 \NewDocumentCommand{\SetSensitiveInfo}{m O{***}}{
-    \ifcumt@if@blindreview
+    \ifcumt@if@output@inspection
         \@namedef{#1}{#2}
+    \else
+        \ifcumt@if@output@blindreview
+            \@namedef{#1}{#2}
+        \fi
     \fi
+    
 }
 \NewDocumentCommand{\SensitiveInfo}{m O{***}}{
-    \ifcumt@if@blindreview
+    \ifcumt@if@output@inspection
         #2
     \else
-        #1
+        \ifcumt@if@output@blindreview
+            #2
+        \else
+            #1
+        \fi
     \fi
 }
 \newcommand\cumt@cumt@name{\SensitiveInfo{中国矿业大学}}
@@ -415,10 +442,15 @@
 
 % 处理元数据
 \cumt@option@hook*{output}{
-    \IfStrEq{\cumt@output}{blindreview}{
-        \cumt@if@blindreviewtrue
+    \IfStrEq{\cumt@output}{inspection}{
+        \cumt@if@output@inspectiontrue
     }{
-        \cumt@if@blindreviewfalse
+        \cumt@if@output@inspectionfalse
+        \IfStrEq{\cumt@output}{blindreview}{
+            \cumt@if@output@blindreviewtrue
+        }{
+            \cumt@if@output@blindreviewfalse
+        }
     }
 }
 \cumt@option@hook{title}{\title{\cumt@title}}
@@ -444,8 +476,6 @@
     \cumt@replace@string@inplace{cumt@funding}{;}{；}
     \gdef\cumt@funding@list{\cumt@funding}
     \cumt@format@funding@list@inplace{cumt@funding@list}
-    \SetSensitiveInfo{cumt@funding}
-    \SetSensitiveInfo{cumt@funding@list}
 }
 \cumt@option@hook*{thesis-type}{
     \cumt@check@degree
@@ -860,7 +890,7 @@
     \newgeometry{left=2.0cm,right=2.0cm,top=2.54cm,bottom=2.54cm}
 
     % LOGO & 基金
-    \ifcumt@if@blindreview
+    \ifcumt@if@output@inspection
         \vspace*{5cm}
     \else
         \ifcumt@if@bachelor
@@ -869,6 +899,9 @@
                 \includegraphics[height=1.96cm]{Assets/Logos/cumt-logo-grouped.pdf}
                 \vfill
             \end{minipage}
+            \ifcumt@if@output@blindreview
+                \cumt@raise@warning{'blindreview' does not support undergraduate student}
+            \fi
         \else 
             \hspace*{1.17cm}
             \begin{minipage}[t][5cm]{0.32\textwidth}
@@ -877,12 +910,16 @@
                 \vfill
             \end{minipage}
             \hfill
-            \ifcumt@if@funding@on@cover
-                \begin{minipage}[t][5cm]{0.5\textwidth}
-                    \vspace{5bp}
-                    {\heiti\zihao{5}\cumt@funding@list}
-                    \vfill
-                \end{minipage}
+            \ifcumt@if@output@blindreview
+                \vspace*{-1cm}
+            \else
+                \ifcumt@if@funding@on@cover
+                    \begin{minipage}[t][5cm]{0.5\textwidth}
+                        \vspace{5bp}
+                        {\heiti\zihao{5}\cumt@funding@list}
+                        \vfill
+                    \end{minipage}
+                \fi
             \fi
         \fi
     \fi
@@ -897,25 +934,42 @@
         }
         
         \vfill
+        \ifcumt@if@output@blindreview
+            \parbox[c][7cm][c]{\textwidth}{
+                \setstretch{2.16}
+                \centering
+                \zihao{3}
+                {\bfseries 一级学科（授权点）代码：}\uline{\makebox[12\ccwd]{\cumt@resizebox@width{4.9cm}{\cumt@first@level@discipline@code}}}\par
+                {\bfseries 一级学科（授权点）名称：}\uline{\makebox[12\ccwd]{\cumt@resizebox@width{4.9cm}{\cumt@first@level@discipline@name}}}\par
+                {\bfseries 二级学科（领域）代码：}\uline{\makebox[13\ccwd]{\cumt@resizebox@width{4.9cm}{\cumt@second@level@discipline@code}}}\par
+                {\bfseries 二级学科（领域）名称：}\uline{\makebox[13\ccwd]{\cumt@resizebox@width{4.9cm}{\cumt@second@level@discipline@name}}}\par
+                {\bfseries 研\hspace{0.5\ccwd}究\hspace{0.5\ccwd}方\hspace{0.5\ccwd}向：}\uline{\makebox[17.5\ccwd]{\cumt@resizebox@width{4.9cm}{\cumt@field}}}\par
+            }
+            \vfill
+            \parbox[c][4cm][c]{\textwidth}{
+                {\centering\kaiti\zihao{-2} 中国矿业大学 \par}
+                {\centering\kaiti\zihao{-2}\zhdigits{\cumt@year}年\zhnumber{\cumt@month}月 \par}
+            }
+        \else
+            \parbox[c][3cm][c]{\textwidth}{
+                \renewcommand\arraystretch{0.8}
+                \centering
+                \setlength{\tabcolsep}{-2bp}
+                \zihao{-3}
+                \begin{tabular}{>{\raggedleft}m{0.35\textwidth}m{0.35\textwidth}}
+                    \makebox[2.24cm]{作 \hfill 者：} & {\cumt@author} \\
+                    \makebox[2.24cm]{导 \hfill 师：} & {\cumt@supervisor@name~\cumt@supervisor@title} \\
+                    \makebox[2.24cm]{} & {\cumt@cosupervisor@name~\cumt@cosupervisor@title} \\
+                \end{tabular}
+            }
+            \vfill
+            \parbox[c][4cm][c]{\textwidth}{
+                {\centering\kaiti\zihao{-2} \cumt@cumt@name \par}
+                {\centering\kaiti\zihao{-2}\zhdigits{\cumt@year}年\zhnumber{\cumt@month}月 \par}
+            }
+        \fi
 
-        \parbox[c][3cm][c]{\textwidth}{
-            \renewcommand\arraystretch{0.8}
-            \centering
-            \setlength{\tabcolsep}{-2bp}
-            \zihao{-3}
-            \begin{tabular}{>{\raggedleft}m{0.35\textwidth}m{0.35\textwidth}}
-                \makebox[2.24cm]{作 \hfill 者：} & {\cumt@author} \\
-                \makebox[2.24cm]{导 \hfill 师：} & {\cumt@supervisor@name~\cumt@supervisor@title} \\
-                \makebox[2.24cm]{} & {\cumt@cosupervisor@name~\cumt@cosupervisor@title} \\
-            \end{tabular}
-        }
-
-        \vfill
-
-        \parbox[c][4cm][c]{\textwidth}{
-            {\centering\kaiti\zihao{-2} \cumt@cumt@name \par}
-            {\centering\kaiti\zihao{-2}\zhdigits{\cumt@year}年\zhnumber{\cumt@month}月 \par}
-        }
+        
     \end{center}
     \cumt@clearpage
     \restoregeometry
@@ -926,18 +980,20 @@
     \ifcumt@if@bachelor
         \cumt@raise@error{The command "\string\MakeGraduateCopyrightDeclarationPage" is only applicable to graduate students. Undergraduate students should use "\string\MakeUndergraduateDeclarationPages" instead}
     \fi
-    \chapter*{学位论文使用授权声明}
-    {   \kaiti
-        \setlength{\baselineskip}{20bp}
-        本人完全了解 \cumt@cumt@name 有关保留、使用学位论文的规定，同意本人所撰写的学位论文的使用授权按照学校的管理规定处理：\par
-        作为申请学位的条件之一，学位论文著作权拥有者须授权所在学校拥有学位论文的部分使用权，即：\ding{172}学校档案馆和图书馆有权保留学位论文的纸质版和电子版，可以使用影印、缩印或扫描等复制手段保存和汇编学位论文；\ding{173}为教学和科研目的，学校档案馆和图书馆可以将公开的学位论文作为资料在档案馆、图书馆等场所或在校园网上供校内师生阅读、浏览。另外，根据有关法规，同意中国国家图书馆保存研究生学位论文。\par
-        （保密的学位论文在解密后适用本授权书）。\par
-    }
-    \vspace{40bp}
-    作者签名：\hspace{15\ccwd}导师签名：\par
-    \hspace{2.5\ccwd}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日\hspace{14\ccwd}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日
+    \ifcumt@if@output@blindreview\else
+        \chapter*{学位论文使用授权声明}
+        {   \kaiti
+            \setlength{\baselineskip}{20bp}
+            本人完全了解 \cumt@cumt@name 有关保留、使用学位论文的规定，同意本人所撰写的学位论文的使用授权按照学校的管理规定处理：\par
+            作为申请学位的条件之一，学位论文著作权拥有者须授权所在学校拥有学位论文的部分使用权，即：\ding{172}学校档案馆和图书馆有权保留学位论文的纸质版和电子版，可以使用影印、缩印或扫描等复制手段保存和汇编学位论文；\ding{173}为教学和科研目的，学校档案馆和图书馆可以将公开的学位论文作为资料在档案馆、图书馆等场所或在校园网上供校内师生阅读、浏览。另外，根据有关法规，同意中国国家图书馆保存研究生学位论文。\par
+            （保密的学位论文在解密后适用本授权书）。\par
+        }
+        \vspace{40bp}
+        作者签名：\hspace{15\ccwd}导师签名：\par
+        \hspace{2.5\ccwd}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日\hspace{14\ccwd}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日
 
-    \cumt@clearpage
+        \cumt@clearpage
+    \fi
 }
 
 
@@ -946,23 +1002,26 @@
     \ifcumt@if@bachelor
         \cumt@raise@error{The command "\string\MakeGraduateOriginalityDeclarationPage" is only applicable to graduate students. Undergraduate students should use "\string\MakeUndergraduateDeclarationPages" instead}
     \fi
+    \ifcumt@if@output@blindreview\else
+        \bichapter*{学位论文原创性声明}{Declaration of \cumt@thesis@type@en \ Originality}
+        {
+            \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
+            本人郑重声明：所呈交的学位论文《 \cumt@title@cn 》，是本人在导师指导下，在 \cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。对本文的研究做出贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
+        }
 
-    \bichapter*{学位论文原创性声明}{Declaration of \cumt@thesis@type@en \ Originality}
-    {
-        \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
-        本人郑重声明：所呈交的学位论文《 \cumt@title@cn 》，是本人在导师指导下，在 \cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。对本文的研究做出贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
-    }
+        \vspace{24bp}
 
-    \vspace{24bp}
+        {\hspace{0.44\textwidth}学位论文作者签名：} \par
+        {\hspace{0.55\textwidth}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日}
 
-    {\hspace{0.44\textwidth}学位论文作者签名：} \par
-    {\hspace{0.55\textwidth}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日}
-
-    \cumt@clearpage
+        \cumt@clearpage
+    \fi
 }
 
 % [本科生/研究生]扉页
-\newcommand\MakeTitlePage{{
+\newcommand\MakeTitlePage{
+    \ifcumt@if@output@blindreview\else
+    {
     \newgeometry{left=2.085cm,right=2.085cm,top=2.54cm,bottom=2.54cm}
     \begin{center}
         \begin{tabularx}{\textwidth}{|X|}
@@ -1015,7 +1074,9 @@
     \end{center}
     \cumt@clearpage
     \restoregeometry
-}}
+    }
+    \fi
+}
 
 % [本科生]毕业设计（论文）原创性声明、本科毕业设计（论文）诚信承诺书、毕业设计（论文）使用授权声明
 \newcommand\MakeUndergraduateDeclarationPages{
@@ -1073,17 +1134,25 @@
 
 % 致谢
 \newenvironment{acknowledgements}{%
-    \ifcumt@if@blindreview
+    \ifcumt@if@output@inspection
         \comment
     \else
-        \chapter*{致谢}
-        \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
+        \ifcumt@if@output@blindreview
+            \comment
+        \else
+            \chapter*{致谢}
+            \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
+        \fi
     \fi
 }{%
-    \ifcumt@if@blindreview
+    \ifcumt@if@output@inspection
         \endcomment
     \else
-        \cumt@clearpage
+        \ifcumt@if@output@blindreview
+            \endcomment
+        \else
+            \cumt@clearpage
+        \fi
     \fi
 }
 
@@ -1438,173 +1507,175 @@
     \ifcumt@if@bachelor
         \cumt@raise@error{The command "\string\MakeDataCollectionPage" is only applicable to graduate students. Undergraduate students DO NOT have this part}
     \fi
-    \newgeometry{left=1.5cm,right=1.5cm,top=2.54cm,bottom=2.54cm}
-    \fancyhfoffset[L]{1.5cm}
-    \fancyhfoffset[R]{1.5cm}
+    \ifcumt@if@output@blindreview\else
+        \newgeometry{left=1.5cm,right=1.5cm,top=2.54cm,bottom=2.54cm}
+        \fancyhfoffset[L]{1.5cm}
+        \fancyhfoffset[R]{1.5cm}
 
-    \bichapter*{学位论文数据集}{\cumt@thesis@type@en \ Data Collection}
-    
-    \newlength{\fundinglength}
-    \settowidth{\fundinglength}{\cumt@funding}
+        \bichapter*{学位论文数据集}{\cumt@thesis@type@en \ Data Collection}
+        
+        \newlength{\fundinglength}
+        \settowidth{\fundinglength}{\cumt@funding}
 
-    \ifdim\fundinglength<100pt
-        \renewcommand\arraystretch{1.50}
-    \else\ifdim\fundinglength<500pt
-        \renewcommand\arraystretch{1.45}
-    \else\ifdim\fundinglength<700pt
-        \renewcommand\arraystretch{1.40}
-    \else\ifdim\fundinglength<900pt
-        \renewcommand\arraystretch{1.35}
-    \else\ifdim\fundinglength<1100pt
-        \renewcommand\arraystretch{1.30}
-    \else\ifdim\fundinglength<1300pt
-        \renewcommand\arraystretch{1.25}
-    \else\ifdim\fundinglength<1500pt
-        \renewcommand\arraystretch{1.20}
-    \else\ifdim\fundinglength<1700pt
-        \renewcommand\arraystretch{1.15}
-    \else\ifdim\fundinglength<1900pt
-        \renewcommand\arraystretch{1.10}
-    \else\ifdim\fundinglength<2100pt
-        \renewcommand\arraystretch{1.05}
-    \else\ifdim\fundinglength<2300pt
-        \renewcommand\arraystretch{1.0}
-    \else
-        \cumt@raise@error{The funding list exceeds the max length}
-    \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
+        \ifdim\fundinglength<100pt
+            \renewcommand\arraystretch{1.50}
+        \else\ifdim\fundinglength<500pt
+            \renewcommand\arraystretch{1.45}
+        \else\ifdim\fundinglength<700pt
+            \renewcommand\arraystretch{1.40}
+        \else\ifdim\fundinglength<900pt
+            \renewcommand\arraystretch{1.35}
+        \else\ifdim\fundinglength<1100pt
+            \renewcommand\arraystretch{1.30}
+        \else\ifdim\fundinglength<1300pt
+            \renewcommand\arraystretch{1.25}
+        \else\ifdim\fundinglength<1500pt
+            \renewcommand\arraystretch{1.20}
+        \else\ifdim\fundinglength<1700pt
+            \renewcommand\arraystretch{1.15}
+        \else\ifdim\fundinglength<1900pt
+            \renewcommand\arraystretch{1.10}
+        \else\ifdim\fundinglength<2100pt
+            \renewcommand\arraystretch{1.05}
+        \else\ifdim\fundinglength<2300pt
+            \renewcommand\arraystretch{1.0}
+        \else
+            \cumt@raise@error{The funding list exceeds the max length}
+        \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
 
-    \begin{center}
-    {
-        \arrayrulecolor{black}
+        \begin{center}
         {
-            \zihao{5}
-            \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{2.0cm}|>{\centering\arraybackslash}m{1.3cm}|>{\centering\arraybackslash}m{2.5cm}|>{\centering\arraybackslash}m{1.3cm}|X|}
-                \hline
-                {\bfseries 关键词$\bm \ast$} & {\bfseries 密级$\bm \ast$} & {\bfseries 中图分类号$\bm \ast$} & {\bfseries UDC} & {\bfseries 论文资助} \\ \hline
-                {\@cnkeywords} & {\cumt@security@level} & {\cumt@clc} & {\cumt@udc} & {\cumt@funding}  \\ \hline
-            \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|X|X|X|X|}
-            \hline
-            {\bfseries 学位授予单位名称$\bm \ast$} & {\bfseries 学位授予单位代码$\bm \ast$} & {\bfseries 学位类别$\bm \ast$} & {\bfseries 学位级别$\bm \ast$} \\ \hline
-            \cumt@cumt@name & \cumt@cumt@code  & {\cumt@degree@category}    & {\cumt@degree@level}       \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|X|X|>{\centering\arraybackslash}m{4cm}|}
-            \hline
-            {\bfseries 论文题目 $\bm \ast$} & {\bfseries 并列题目$\bm \ast$} & {\bfseries 论文语种$\bm \ast$} \\ \hline
-            {\cumt@title@cn}            & {\cumt@title@en}           & {\cumt@language}           \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|X|X|X|X|}
-            \hline
-            {\bfseries 作者姓名$\bm \ast$}   & { \cumt@author } & {\bfseries 学号$\bm \ast$} & {\cumt@student@id}  \\ 
-            \hline
-            {\bfseries 培养单位名称$\bm \ast$} & {\bfseries 培养单位代码$\bm \ast$} & {\bfseries 培养单位地址} & {\bfseries 邮编}  \\ 
-            \hline
-            \cumt@cumt@name & \cumt@cumt@code  & \cumt@cumt@address & \cumt@cumt@postcode \\ 
-            \hline
-            {\bfseries 学科专业$\bm \ast$}   & {\bfseries 研究方向$\bm \ast$}   & {\bfseries 学制$\bm \ast$} & {\bfseries 学位授予年$\bm \ast$} \\ 
-            \hline
-            { \cumt@major }  & { \cumt@field }  & {\cumt@program@duration} & {\cumt@year} \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{6.6cm}|X|}
-            \hline
-            {\bfseries 论文提交日期$\bm \ast$} & {\cumt@year 年 \cumt@month 月} \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|X|X|X|X|}
-            \hline
-            {\bfseries 导师姓名$\bm \ast$} & {\cumt@supervisor@name@merged} & {\bfseries 职称$\bm \ast$} & {  \cumt@supervisor@title@merged  } \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{3.0cm}|>{\centering\arraybackslash}m{3.2cm}|X|}
-            \hline
-            {\bfseries 评阅人} & {\bfseries 答辩委员会主席$\bm \ast$} & {\bfseries 答辩委员会成员}\\ \hline
-            {\cumt@reviewer} & {\cumt@defense@committee@chair} & {\cumt@defense@committee@members} \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|X|}
-            \hline
+            \arrayrulecolor{black}
             {
-                \bfseries
-                % \makecell[l]{\cumt@electronic@thesis@format@cell}
-                \makecell[l]{%
-                    电子版论文提交格式\hspace{2\ccwd}%
-                    文本（\cumt@format@checkbox{\cumt@electronic@thesis@format}{文本}）\ %
-                    图像（\cumt@format@checkbox{\cumt@electronic@thesis@format}{图像}）\ %
-                    视频（\cumt@format@checkbox{\cumt@electronic@thesis@format}{视频}）\ %
-                    音频（\cumt@format@checkbox{\cumt@electronic@thesis@format}{音频}）\ %
-            多媒体（\cumt@format@checkbox{\cumt@electronic@thesis@format}{多媒体}） \\
-            \hspace{11\ccwd}其他（\cumt@format@checkbox{\cumt@electronic@thesis@format}{其他}） \\
-                    推荐格式：application/msword; application/pdf%
-                }
-            } \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-        \zihao{5}
-        \begin{tabularx}{15.05cm}{|X|X|X|}
-            \hline
-            {\bfseries 电子版论文出版（发布）者} & {\bfseries 电子版论文出版（发布）地} & {\bfseries 权限声明} \\ \hline
-            {\cumt@electronic@thesis@publisher} & {\cumt@electronic@thesis@publisher@location} & {\cumt@permission@statement} \\
-            \hline
-        \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
+                \zihao{5}
+                \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{2.0cm}|>{\centering\arraybackslash}m{1.3cm}|>{\centering\arraybackslash}m{2.5cm}|>{\centering\arraybackslash}m{1.3cm}|X|}
+                    \hline
+                    {\bfseries 关键词$\bm \ast$} & {\bfseries 密级$\bm \ast$} & {\bfseries 中图分类号$\bm \ast$} & {\bfseries UDC} & {\bfseries 论文资助} \\ \hline
+                    {\@cnkeywords} & {\cumt@security@level} & {\cumt@clc} & {\cumt@udc} & {\cumt@funding}  \\ \hline
+                \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
             \zihao{5}
-            \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{6cm}|X|}
+            \begin{tabularx}{15.05cm}{|X|X|X|X|}
                 \hline
-                {\bfseries 论文总页数$\bm \ast$} & { \pageref{cumt@reference@end@page} } \\ %LastPage
+                {\bfseries 学位授予单位名称$\bm \ast$} & {\bfseries 学位授予单位代码$\bm \ast$} & {\bfseries 学位类别$\bm \ast$} & {\bfseries 学位级别$\bm \ast$} \\ \hline
+                \cumt@cumt@name & \cumt@cumt@code  & {\cumt@degree@category}    & {\cumt@degree@level}       \\
                 \hline
             \end{tabularx}
-        }
-        \vskip -1.4pt
-        {
-            \renewcommand\tabularxcolumn[1]{>{\raggedright\arraybackslash}m{##1}}
+            }
+            \vskip -1.4pt
+            {
+            \zihao{5}
+            \begin{tabularx}{15.05cm}{|X|X|>{\centering\arraybackslash}m{4cm}|}
+                \hline
+                {\bfseries 论文题目 $\bm \ast$} & {\bfseries 并列题目$\bm \ast$} & {\bfseries 论文语种$\bm \ast$} \\ \hline
+                {\cumt@title@cn}            & {\cumt@title@en}           & {\cumt@language}           \\
+                \hline
+            \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
+            \zihao{5}
+            \begin{tabularx}{15.05cm}{|X|X|X|X|}
+                \hline
+                {\bfseries 作者姓名$\bm \ast$}   & { \cumt@author } & {\bfseries 学号$\bm \ast$} & {\cumt@student@id}  \\ 
+                \hline
+                {\bfseries 培养单位名称$\bm \ast$} & {\bfseries 培养单位代码$\bm \ast$} & {\bfseries 培养单位地址} & {\bfseries 邮编}  \\ 
+                \hline
+                \cumt@cumt@name & \cumt@cumt@code  & \cumt@cumt@address & \cumt@cumt@postcode \\ 
+                \hline
+                {\bfseries 学科专业$\bm \ast$}   & {\bfseries 研究方向$\bm \ast$}   & {\bfseries 学制$\bm \ast$} & {\bfseries 学位授予年$\bm \ast$} \\ 
+                \hline
+                { \cumt@major }  & { \cumt@field }  & {\cumt@program@duration} & {\cumt@year} \\
+                \hline
+            \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
+            \zihao{5}
+            \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{6.6cm}|X|}
+                \hline
+                {\bfseries 论文提交日期$\bm \ast$} & {\cumt@year 年 \cumt@month 月} \\
+                \hline
+            \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
+            \zihao{5}
+            \begin{tabularx}{15.05cm}{|X|X|X|X|}
+                \hline
+                {\bfseries 导师姓名$\bm \ast$} & {\cumt@supervisor@name@merged} & {\bfseries 职称$\bm \ast$} & {  \cumt@supervisor@title@merged  } \\
+                \hline
+            \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
+            \zihao{5}
+            \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{3.0cm}|>{\centering\arraybackslash}m{3.2cm}|X|}
+                \hline
+                {\bfseries 评阅人} & {\bfseries 答辩委员会主席$\bm \ast$} & {\bfseries 答辩委员会成员}\\ \hline
+                {\cumt@reviewer} & {\cumt@defense@committee@chair} & {\cumt@defense@committee@members} \\
+                \hline
+            \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
             \zihao{5}
             \begin{tabularx}{15.05cm}{|X|}
                 \hline
-                {\bfseries 注：共33项，其中带$\bm \ast$为必填数据，共22项。} \\
+                {
+                    \bfseries
+                    % \makecell[l]{\cumt@electronic@thesis@format@cell}
+                    \makecell[l]{%
+                        电子版论文提交格式\hspace{2\ccwd}%
+                        文本（\cumt@format@checkbox{\cumt@electronic@thesis@format}{文本}）\ %
+                        图像（\cumt@format@checkbox{\cumt@electronic@thesis@format}{图像}）\ %
+                        视频（\cumt@format@checkbox{\cumt@electronic@thesis@format}{视频}）\ %
+                        音频（\cumt@format@checkbox{\cumt@electronic@thesis@format}{音频}）\ %
+                多媒体（\cumt@format@checkbox{\cumt@electronic@thesis@format}{多媒体}） \\
+                \hspace{11\ccwd}其他（\cumt@format@checkbox{\cumt@electronic@thesis@format}{其他}） \\
+                        推荐格式：application/msword; application/pdf%
+                    }
+                } \\
                 \hline
             \end{tabularx}
-        }
+            }
+            \vskip -1.4pt
+            {
+            \zihao{5}
+            \begin{tabularx}{15.05cm}{|X|X|X|}
+                \hline
+                {\bfseries 电子版论文出版（发布）者} & {\bfseries 电子版论文出版（发布）地} & {\bfseries 权限声明} \\ \hline
+                {\cumt@electronic@thesis@publisher} & {\cumt@electronic@thesis@publisher@location} & {\cumt@permission@statement} \\
+                \hline
+            \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
+                \zihao{5}
+                \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{6cm}|X|}
+                    \hline
+                    {\bfseries 论文总页数$\bm \ast$} & { \pageref{cumt@reference@end@page} } \\ %LastPage
+                    \hline
+                \end{tabularx}
+            }
+            \vskip -1.4pt
+            {
+                \renewcommand\tabularxcolumn[1]{>{\raggedright\arraybackslash}m{##1}}
+                \zihao{5}
+                \begin{tabularx}{15.05cm}{|X|}
+                    \hline
+                    {\bfseries 注：共33项，其中带$\bm \ast$为必填数据，共22项。} \\
+                    \hline
+                \end{tabularx}
+            }
 
-    }
-    \end{center}
-    
-    \restoregeometry
+        }
+        \end{center}
+        
+        \restoregeometry
+    \fi
 }
 
 % Ai

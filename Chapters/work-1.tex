@@ -15,7 +15,7 @@
 在文档的导言区，使用 \texttt{\textbackslash cumtsetup\{\}} 配置论文的元数据。以下是一些关键配置项：
 
 \begin{itemize}
-    \item \texttt{output}：设置输出格式，可选 \texttt{electronic}（电子版）、\texttt{print}（打印版）或\texttt{blindreview}（盲审版）\footnote{盲审版将隐藏学校、人名等敏感信息，并隐去致谢部分}。
+    \item \texttt{output}：设置输出格式，可选 \texttt{electronic}（电子版）、\texttt{print}（打印版）或\texttt{blindreview}（盲审版）\footnote{盲审版仅需保留封面页和论文主体部分}或\texttt{inspection}（抽检版）\footnote{抽检版将隐藏学校、人名、校徽等敏感信息，并隐去致谢部分}。
     \item \texttt{funding-on-cover}：是否在封面显示基金信息，可选 \texttt{true} 或 \texttt{false}。
     \item \texttt{title} 和 \texttt{title*}：分别设置中文标题和英文标题。
     \item \texttt{author}：设置作者姓名。
@@ -27,6 +27,10 @@
     \item \texttt{affiliation}：设置培养单位（学院）。
     \item \texttt{major}：设置学科专业。
     \item \texttt{field}：设置研究方向。
+    \item \texttt{first-level-discipline-code}：一级学科（授权点）代码。
+    \item \texttt{first-level-discipline-name}：一级学科（授权点）名称。
+    \item \texttt{second-level-discipline-code}：二级学科（领域）代码。
+    \item \texttt{second-level-discipline-name}：二级学科（领域）名称。
     \item \texttt{defense-committee-chair}：设置答辩委员会主席。
     \item \texttt{reviewer}：设置评阅人。
     \item \texttt{security-level}：设置密级。
@@ -46,7 +50,7 @@
 \end{itemize}
 
 \bisection{多级标题}{Titles}
-使用以下命令输入各级标题：
+\subsection{有编号标题}
 \begin{itemize}[itemsep=2pt,topsep=5pt]
     \item \verb|\bichapter{}{}|：中文、英文一级标题（章）。
     \item \verb|\bisection{}{}|：中文、英文二级标题（节）。
@@ -55,6 +59,13 @@
     \item \verb|\paragraph{}|：五级标题（段落）。默认为内嵌（Run-in）标题，可使用\verb|\paragraph*{}|实现陈列（Display）标题。
     \item \verb|\subparagraph{}|：六级标题（小段）。默认为内嵌（Run-in）标题，可使用\verb|\subparagraph*{}|实现陈列（Display）标题。
 \end{itemize}
+
+\subsection{无编号标题}
+\begin{itemize}[itemsep=2pt,topsep=5pt]
+  \item \verb|\bichapter*{}|：中文、英文一级标题（章），添加到目录。
+  \item \verb|\chapter*{}|：中文一级标题（章），不添加到目录。
+\end{itemize}
+
 
 \bisection{内容和章节}{Contents and Chapters}
 

@@ -5,12 +5,13 @@
 %  - 毕业设计（论文）答辩及综合成绩
 
 
-% 一些可能用到的宏
+% 一些可能用到的宏和命令
 % \cumt@title@cn - 论文题目
 % \cumt@author - 作者姓名
 % \cumt@affiliation - 单位（学院）
 % \cumt@major - 专业
 % \cumt@student@id - 学号
+% \cumt@clearpage - 根据输出模式清页
 
 \makeatletter
 %============================================================================ 表1
@@ -191,6 +192,5 @@
     \end{tabularx}
 }
 \end{center}
-\clearpage
+\cumt@clearpage
 %============================================================================
-\makeatother
