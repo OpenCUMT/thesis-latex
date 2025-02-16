@@ -218,20 +218,20 @@
             default= ,
         },
     first-level-discipline-code = {
-        name=first@level@discipline@code,
-        default= ,
+            name=first@level@discipline@code,
+            default= ,
         },
     first-level-discipline-name = {
-        name=first@level@discipline@name,
-        default= ,
+            name=first@level@discipline@name,
+            default= ,
         },
     second-level-discipline-code = {
-        name=second@level@discipline@code,
-        default= ,
+            name=second@level@discipline@code,
+            default= ,
         },
     second-level-discipline-name = {
-        name=second@level@discipline@name,
-        default= ,
+            name=second@level@discipline@name,
+            default= ,
         },
     defense-committee-chair={
             name=defense@committee@chair,
@@ -601,6 +601,7 @@
 \RequirePackage{amssymb} % 数学符号支持
 \RequirePackage{bm} % 公式中字母加粗
 \RequirePackage{upgreek} % 大写希腊字母
+\RequirePackage[version=3]{mhchem} % 化学方程式
 \RequirePackage[
     backend=biber, % 使用 biber 后端
     style=gb7714-2015, % 引用样式
@@ -1210,6 +1211,21 @@
     \cumt@clearpage
 }
 
+% 移除目录中的cite
+\let\originalcite\cite
+\newcommand\disablecite{
+    \renewcommand{\cite}[1]{}%
+}
+\newcommand\enablecite{
+    \let\cite\originalcite%
+}
+\pretocmd{\@starttoc}{%
+    \disablecite
+}{}{}
+\apptocmd{\@starttoc}{%
+    \enablecite
+}{}{}
+
 % 中英文目录格式
 \titlecontents{chapter}
 [\z@]
@@ -1296,17 +1312,6 @@
     \tl_set:Nn \l_tmpb_tl { #2 }
 }
 
-\NewDocumentCommand\cumt@list@entries@of{m}
-{
-    \str_if_eq:nnT { #1 } { figure }
-    {
-        \tl_use:N \g_listoffigures_storelines_tl
-    }
-    \str_if_eq:nnT { #1 } { table }
-    {
-        \tl_use:N \g_listoftables_storelines_tl
-    }
-}
 
 \NewDocumentCommand\cumt@list@line{ m m m m }
 {
@@ -1315,9 +1320,9 @@
         #2
         \tl_gput_right:Nx \g_listoffigures_storelines_tl
         {
-            \exp_not:V \l_tmpa_tl \exp_not:N &
-            \exp_not:V \l_tmpb_tl \exp_not:N &
-            \exp_not:n { #3 \\ \hline }
+            \exp_not:N \hyperlink{#4}{\exp_not:V \l_tmpa_tl} &
+            \exp_not:N \hyperlink{#4}{\exp_not:V \l_tmpb_tl} &
+            \exp_not:n { \hyperlink{#4}{#3} \\ \hline }
         }
     }
     \str_if_eq:nnT { #1 } { table }
@@ -1325,9 +1330,9 @@
         #2
         \tl_gput_right:Nx \g_listoftables_storelines_tl
         {
-            \exp_not:V \l_tmpa_tl \exp_not:N &
-            \exp_not:V \l_tmpb_tl \exp_not:N &
-            \exp_not:n { #3 \\ \hline }
+            \exp_not:N \hyperlink{#4}{\exp_not:V \l_tmpa_tl} &
+            \exp_not:N \hyperlink{#4}{\exp_not:V \l_tmpb_tl} &
+            \exp_not:n { \hyperlink{#4}{#3} \\ \hline }
         }
     }
 }
@@ -1343,17 +1348,17 @@
     \str_case:nnF { #1 }
     {
         { figure }
-            {
-                \str_set:Nn \l_tmpa_str { 图 }
-                \str_set:Nn \l_tmpb_str { Figures }
-                \str_set:Nn \l_tmpc_str { lof }
-            }
-            { table }
-            {
-                \str_set:Nn \l_tmpa_str { 表 }
-                \str_set:Nn \l_tmpb_str { Tables }
-                \str_set:Nn \l_tmpc_str { lot }
-            }
+        {
+            \str_set:Nn \l_tmpa_str { 图 }
+            \str_set:Nn \l_tmpb_str { Figures }
+            \str_set:Nn \l_tmpc_str { lof }
+        }
+        { table }
+        {
+            \str_set:Nn \l_tmpa_str { 表 }
+            \str_set:Nn \l_tmpb_str { Tables }
+            \str_set:Nn \l_tmpc_str { lot }
+        }
     }
     {
         \cumt@raise@error{Only support "table" and "figure", got "#1"} 
@@ -1379,20 +1384,15 @@
 
     % 设置 \contentsline 和 \numberline
     \cs_set_eq:NN \contentsline \cumt@list@line
-    \str_if_eq:nnTF { #1 } { figure }
+    \str_if_eq:nnT { #1 } { figure }
     {
         \cs_set_eq:NN \numberline \cumt@list@figures@line@name
     }
+    \str_if_eq:nnT { #1 } { table }
     {
-        \str_if_eq:nnTF { #1 } { table }
-        {
-            \cs_set_eq:NN \numberline \cumt@list@tables@line@name
-        }
-        {
-            \cumt@raise@error{Only support "table" and "figure", got "#1"}
-        }
+        \cs_set_eq:NN \numberline \cumt@list@tables@line@name
     }
-
+    
     \cs_set_eq:NN \addvspace \use_none:n
 
     \@starttoc{\l_tmpc_str}
@@ -1400,10 +1400,21 @@
     \zihao{5}
     \setlength{\tabcolsep}{0bp}
     \begin{center}
+        \disablecite
         \begin{longtable}{@{}|C{2.34cm}|C{\textwidth-2.34cm-1.25cm-4\arrayrulewidth}|C{1.25cm}|@{}}
             \hline
             \l_tmpa_str 序号 & \l_tmpa_str 名称 & 页码 \\ \hline\endhead
-            \cumt@list@entries@of{#1}
+            \str_case:nnF { #1 }
+            {
+                { figure }
+                {
+                    \tl_use:N \g_listoffigures_storelines_tl
+                }
+                { table }
+                {
+                    \tl_use:N \g_listoftables_storelines_tl
+                }
+            }{}
         \end{longtable}
     \end{center}
     \group_end:
@@ -1686,26 +1697,26 @@
 \ctexset{
     % 一级标题[章]（中文黑体，数字Times New Roman，小二加粗，单倍行距，段前6磅，段后0磅；两端对齐，大纲1级，编号与标题之间留一个空格）
     chapter = {
-      name       = {,},
-      format     = \linespread{1}\zihao{-2}\heiti\bfseries\raggedright,
-      indent     = 0bp,
-      number     = \arabic{chapter},
-      aftername  = \hspace{0.5\ccwd},
-      beforeskip = 13bp,
-      afterskip  = 0bp,
-      pagestyle  = fancy,
-      runin      = false,
-      fixskip     = true,
-     },
+        name       = {,},
+        format     = \linespread{1}\zihao{-2}\heiti\bfseries\raggedright,
+        indent     = 0bp,
+        number     = \arabic{chapter},
+        aftername  = \hspace{0.5\ccwd},
+        beforeskip = 13bp,
+        afterskip  = 0bp,
+        pagestyle  = fancy,
+        runin      = false,
+        fixskip     = true,
+    },
     % 二级标题[节]（中文黑体，数字英文Times New Roman，小三号，行距固定值20磅，段前6磅，段后6磅；两端对齐，大纲2级，编号与标题之间留一个空格）
     section = {
-      format     = \setlength{\baselineskip}{20bp}\zihao{-3}\heiti\raggedright,
-      indent     = 0bp,
-      aftername  = \hspace{0.5\ccwd},
-      beforeskip = 2bp,
-      afterskip  = 6bp,
-      runin      = false,
-     },
+        format     = \setlength{\baselineskip}{20bp}\zihao{-3}\heiti\raggedright,
+        indent     = 0bp,
+        aftername  = \hspace{0.5\ccwd},
+        beforeskip = 2bp,
+        afterskip  = 6bp,
+        runin      = false,
+    },
     %
     % 三级标题[小节]（中文黑体，数字Times New Roman，四号，行距固定值20磅，段前6磅，段后6磅；两端对齐，大纲3级，编号与标题之间留一个空格；三级标题不需要翻译成英文）
     subsection = {
@@ -1765,8 +1776,8 @@
     \IfBooleanTF{#1}
     {% 无编号无目录
         \newpage
-        \buildinchapter*{\hspace*{\fill}#2\hspace*{\fill}}
-        \markboth{#2}{}
+        \buildinchapter*{\hspace*{\fill}{#2}\hspace*{\fill}}
+        \markboth{{#2}}{}
         \vspace*{12bp}
     }
     {% 
@@ -1778,35 +1789,35 @@
     {% 无编号
         \newpage
         \phantomsection
-        \addcontentsline{toc}{chapter}{#2}
-        \addcontentsline{toe}{chapter}{#3}
-        \buildinchapter*{\hspace*{\fill}#2\hspace*{\fill}}
-        \markboth{#2}{}
+        \addcontentsline{toc}{chapter}{{#2}}
+        \addcontentsline{toe}{chapter}{{#3}}
+        \buildinchapter*{\hspace*{\fill}{#2}\hspace*{\fill}}
+        \markboth{{#2}}{}
         \vspace*{12bp}
     }
     {% 编号
         \newpage
-        \buildinchapter{#2}
+        \buildinchapter{{#2}}
         \vspace*{3.3ex}
-        {\linespread{1}\zihao{-2}\heiti\bfseries\raggedright\thechapter\hspace{0.5\ccwd}#3\par}
+        {\linespread{1}\zihao{-2}\heiti\bfseries\raggedright\thechapter\hspace{0.5\ccwd}{#3}\par}
         \vspace{4bp}
-        \cumt@contents@add@line@numbered@en{chapter}{#3}
+        \cumt@contents@add@line@numbered@en{chapter}{{#3}}
     }
 }
 \newcommand\bisection[2]{
-    \section[#1]{#1（#2） }%
-    \cumt@contents@add@line@numbered@en{section}{#2}
+    \section[{#1}]{{#1}（{#2}） }%
+    \cumt@contents@add@line@numbered@en{section}{{#2}}
 }
 \let\buildinparagraph\paragraph
 \RenewDocumentCommand\paragraph{s m}{%
     \IfBooleanTF{#1}
     {%
         \ctexset{paragraph/runin = false}
-        \buildinparagraph{#2}
+        \buildinparagraph{{#2}}
     }
     {% 
         \ctexset{paragraph/runin = true}
-        \buildinparagraph{#2}
+        \buildinparagraph{{#2}}
     }
 }
 \let\buildinsubparagraph\subparagraph
@@ -1814,10 +1825,10 @@
     \IfBooleanTF{#1}
     {%
         \ctexset{subparagraph/runin = false}
-        \buildinsubparagraph{#2}
+        \buildinsubparagraph{{#2}}
     }
     {%
         \ctexset{subparagraph/runin = true}
-        \buildinsubparagraph{#2}
+        \buildinsubparagraph{{#2}}
     }
 }
