@@ -142,6 +142,33 @@
 
 （此项仅限本科生使用）
 
+\bisection{公式}{Equation}
+
+\subsection{数学公式}
+
+\begin{equation}
+  \mathcal{L}_F(\theta, \psi, \xi, \epsilon, \eta) = \mathcal{KL}(\mathcal{N}(\mu_x, \sigma_x^2) || \mathcal{N}(\mu_y, \sigma_y^2))
+\end{equation}
+\begin{equation}
+  \hat{\mathbf{y}}=\mathrm{argmax}_y\ \mathcal{D}_\vartheta(\mathcal{F}_\theta(\mathbf{X}_\sigma)).
+\end{equation}
+
+\subsection{化学公式}
+模板中使用 \textsf{mhchem} 宏包实现化学公式。使用\verb|\ce{}|输入。
+
+\begin{center}
+  \ce{Ba^2+ + SO4^2- =BaSO4 v}
+
+  \ce{S2O3^2- +2H+ =S v +SO2 ^ +H2O}
+
+  \ce{N2 + 3H2 <=>T[高温、加压][催化剂] 2NH3}
+
+  \ce{2H2 + O2 ->[\text{燃烧}] 2H2O}
+
+  \ce{CH4 + 2O2 ->[\text{FIRE}] CO2 + 2H2O}
+\end{center}
+
+
 \bisection{浮动体}{Floats}
 \subsection{图}
 模板使用 \textsf{subcaption} 宏包实现子图。具体用法参考\url{https://mirrors.ibiblio.org/CTAN/macros/latex/contrib/caption/subcaption.pdf}
@@ -150,7 +177,7 @@
 ......
 
 \subsection{算法}
-模板中使用 \texttt{algorithm2e} 宏包实现算法环境。具体用法参考官方文档。
+模板中使用 \textsf{algorithm2e} 宏包实现算法环境。具体用法参考官方文档。
 
 \begin{algorithm}
   \SetAlgoLined
@@ -171,26 +198,6 @@
 \end{algorithm}
 
 \nocite{*}
-
-\bisection{公式}{Equation}
-
-\subsection{数学公式}
-
-
-\subsection{化学公式}
-模板中使用 \texttt{mhchem} 宏包实现化学公式。使用\verb|\ce{}|输入。
-
-\begin{center}
-  \ce{Ba^2+ + SO4^2- =BaSO4 v}
-
-  \ce{S2O3^2- +2H+ =S v +SO2 ^ +H2O}
-
-  \ce{N2 + 3H2 <=>T[高温、加压][催化剂] 2NH3}
-
-  \ce{2H2 + O2 ->[\text{燃烧}] 2H2O}
-
-  \ce{CH4 + 2O2 ->[\text{FIRE}] CO2 + 2H2O}
-\end{center}
 
 
 

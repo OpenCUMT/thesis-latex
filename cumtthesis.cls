@@ -47,7 +47,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.0-beta}
+\def\version{2.3.1-beta}
 \def\versiondate{2025/02/14}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
@@ -595,9 +595,8 @@
 \RequirePackage[algochapter,linesnumbered,ruled,vlined]{algorithm2e} % 算法表
 \RequirePackage{pifont} % 提供带圈的数字
 \RequirePackage{amsmath} % 数学公式支持
+\RequirePackage{amsfonts} % 数学符号字体库
 \RequirePackage{amsthm} % 定理环境支持
-\RequirePackage{newtxmath} % 设置数学字体为Times风格
-\let\Bbbk\relax % newtxmath与amssymb均定义了\Bbbk
 \RequirePackage{amssymb} % 数学符号支持
 \RequirePackage{bm} % 公式中字母加粗
 \RequirePackage{upgreek} % 大写希腊字母
@@ -1276,44 +1275,39 @@
 
 \ExplSyntaxOn
 % 图、表清单
-\bool_new:N \l_enfigcaption_bool
-\bool_set_true:N \l_enfigcaption_bool
+\bool_new:N \l_encaptionflag_bool
+\bool_set_true:N \l_encaptionflag_bool
 \tl_new:N \g_listoffigures_storelines_tl
-
-\bool_new:N \l_entabcaption_bool
-\bool_set_true:N \l_entabcaption_bool
 \tl_new:N \g_listoftables_storelines_tl
 
-\NewDocumentCommand\cumt@list@figures@line@name{ m m }
+\NewDocumentCommand\cumt@list@numberline{ m m m }
 {
-    \bool_if:NTF \l_enfigcaption_bool
+    \str_if_eq:nnT { #1 } { figure }
     {
-        \tl_set:Nn \l_tmpa_tl { 图~#1 }
-        \bool_set_false:N \l_enfigcaption_bool
+        \tl_set:Nn \l_cn_name_tl { 图 }
+        \tl_set:Nn \l_en_name_tl { Figure }
+    }
+
+    \str_if_eq:nnT { #1 } { table }
+    {
+        \tl_set:Nn \l_cn_name_tl { 表 }
+        \tl_set:Nn \l_en_name_tl { Table }
+    }
+
+    \bool_if:NTF \l_encaptionflag_bool
+    {
+        \tl_set:Nx \l_tmpa_tl { \l_cn_name_tl \ #2 }
+        \bool_set_false:N \l_encaptionflag_bool
     }
     {
-        \tl_set:Nn \l_tmpa_tl { Figure~#1 }
-        \bool_set_true:N \l_enfigcaption_bool
+        \tl_set:Nx \l_tmpa_tl { \l_en_name_tl \ #2 }
+        \bool_set_true:N \l_encaptionflag_bool
     }
-    \tl_set:Nn \l_tmpb_tl { #2 }
+
+    \tl_set:Nn \l_tmpb_tl { #3 }
 }
 
-\NewDocumentCommand\cumt@list@tables@line@name{ m m }
-{
-    \bool_if:NTF \l_entabcaption_bool
-    {
-        \tl_set:Nn \l_tmpa_tl { 表~#1 }
-        \bool_set_false:N \l_entabcaption_bool
-    }
-    {
-        \tl_set:Nn \l_tmpa_tl { Table~#1 }
-        \bool_set_true:N \l_entabcaption_bool
-    }
-    \tl_set:Nn \l_tmpb_tl { #2 }
-}
-
-
-\NewDocumentCommand\cumt@list@line{ m m m m }
+\NewDocumentCommand\cumt@list@contentsline{ m m m m }
 {
     \str_if_eq:nnT { #1 } { figure }
     {
@@ -1383,15 +1377,8 @@
     \group_begin:
 
     % 设置 \contentsline 和 \numberline
-    \cs_set_eq:NN \contentsline \cumt@list@line
-    \str_if_eq:nnT { #1 } { figure }
-    {
-        \cs_set_eq:NN \numberline \cumt@list@figures@line@name
-    }
-    \str_if_eq:nnT { #1 } { table }
-    {
-        \cs_set_eq:NN \numberline \cumt@list@tables@line@name
-    }
+    \cs_set_eq:NN \contentsline \cumt@list@contentsline
+    \cs_set:Npn \numberline ##1 ##2 { \cumt@list@numberline { #1 } { ##1 } { ##2 } }
     
     \cs_set_eq:NN \addvspace \use_none:n
 
