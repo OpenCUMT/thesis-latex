@@ -15,7 +15,7 @@
 在文档的导言区，使用 \texttt{\textbackslash cumtsetup\{\}} 配置论文的元数据。以下是一些关键配置项：
 
 \begin{itemize}
-    \item \texttt{output}：设置输出格式，可选 \texttt{electronic}（电子版）、\texttt{print}（打印版）或\texttt{blindreview}（盲审版）\footnote{盲审版仅需保留封面页和论文主体部分}或\texttt{inspection}（抽检版）\footnote{抽检版将隐藏学校、人名、校徽等敏感信息，并隐去致谢部分}。
+    \item \texttt{output}：设置输出格式，可选 \texttt{electronic}（电子版）、\texttt{print}（打印版）或\texttt{blindreview}（盲审版）\footnote{盲审版仅保留封面页和论文主体部分}或\texttt{inspection}（抽检版）\footnote{抽检版隐藏学校、人名、校徽等敏感信息，并隐去致谢部分}。
     \item \texttt{funding-on-cover}：是否在封面显示基金信息，可选 \texttt{true} 或 \texttt{false}。
     \item \texttt{title} 和 \texttt{title*}：分别设置中文标题和英文标题。
     \item \texttt{author}：设置作者姓名。
@@ -174,7 +174,7 @@
 模板使用 \textsf{subcaption} 宏包实现子图。具体用法参考\url{https://mirrors.ibiblio.org/CTAN/macros/latex/contrib/caption/subcaption.pdf}
 
 \subsection{表}
-......
+模板引入了\textsf{tabularx}宏包。同时自定义列类型\texttt{C}，用于创建固定宽度且内容水平居中的表格列，即 \verb|C{<type>}{<width>}|。其中，\texttt{\#1} 指定列的基本类型（如 \texttt{p}、\texttt{m} 或 \texttt{b}），\texttt{\#2} 是列宽。
 
 \subsection{算法}
 模板中使用 \textsf{algorithm2e} 宏包实现算法环境。具体用法参考官方文档。

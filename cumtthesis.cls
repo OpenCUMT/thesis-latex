@@ -845,6 +845,7 @@
 \renewcommand\thetable{\arabic{chapter}-\arabic{table}}
 \renewcommand\thefigure{\arabic{chapter}-\arabic{figure}}
 \renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
+\newcolumntype{C}[2]{>{\centering\arraybackslash}#1{\dimexpr #2 -2\tabcolsep-1.5\arrayrulewidth \relax}}
 
 % 表格样式
 \definecolor{greentableline}{rgb}{.105,.410,.113} % 模板中的颜色
@@ -1331,8 +1332,6 @@
     }
 }
 
-\newcolumntype{C}[1]{>{\centering\arraybackslash}m{\dimexpr #1 \relax}}
-
 \str_if_exist:NF \l_tmpa_str { \str_new:N \l_tmpa_str }
 \str_if_exist:NF \l_tmpb_str { \str_new:N \l_tmpb_str }
 \str_if_exist:NF \l_tmpc_str { \str_new:N \l_tmpc_str }
@@ -1388,7 +1387,7 @@
     \setlength{\tabcolsep}{0bp}
     \begin{center}
         \disablecite
-        \begin{longtable}{@{}|C{2.34cm}|C{\textwidth-2.34cm-1.25cm-4\arrayrulewidth}|C{1.25cm}|@{}}
+        \begin{longtable}{@{}|C{m}{2.34cm}|C{m}{\textwidth-2.34cm-1.25cm-4\arrayrulewidth}|C{m}{1.25cm}|@{}}
             \hline
             \l_tmpa_str 序号 & \l_tmpa_str 名称 & 页码 \\ \hline\endhead
             \str_case:nnF { #1 }
