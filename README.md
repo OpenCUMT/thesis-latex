@@ -8,7 +8,7 @@
 
 本 LaTeX 模板根据[《中国矿业大学研究生学位论文撰写规定及模板（2021年版）》](https://gs.cumt.edu.cn/info/1049/3149.htm)的要求编写，适用于中国矿业大学本科毕业论文（设计）、硕士学位论文、博士学位论文的撰写。
 
-> **注意**：暂不支持外文学院硕士毕业论文。
+> **注意**：暂不支持外文学院硕士学位论文。
 
 > **Overleaf 模板**：[点击此处](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg)访问 Overleaf 模板，近期将同步更新。
 
@@ -44,6 +44,9 @@
 欢迎在 [Issues](https://github.com/senli1073/cumtthesis/issues) 中提出新 issue，并详细描述您的建议。
 
 ## 更新日志
+
+### 2025.02.16 V2.3.1
+- 修复BUG
 
 ### 2025.02.16 V2.3.1-beta
 - 修复图表清单超链接

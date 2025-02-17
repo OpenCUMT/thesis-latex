@@ -47,7 +47,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.1-beta}
+\def\version{2.3.1}
 \def\versiondate{2025/02/14}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
