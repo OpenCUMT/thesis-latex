@@ -47,8 +47,8 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.1}
-\def\versiondate{2025/02/14}
+\def\version{2.3.2}
+\def\versiondate{2025/02/19}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
 % 错误和警告
@@ -1466,7 +1466,7 @@
     \setlength{\biblabelsep}{0.5\ccwd}
     \renewcommand\bibfont{\zihao{5}}
     \begingroup
-    \setstretch{1.667} % stretch = lineskip / fontsize = 20bp / 12bp ≈ 1.667
+    \setstretch{1.587} % = 20bp / (10.5bp * 1.2) ≈ 1.587
     \vspace*{8bp}
     \printbibliography[heading=none]
     \endgroup
@@ -1480,6 +1480,7 @@
 \newenvironment{appendix}{%
     \stepcounter{appendixnum}
     \bichapter*{附录~\theappendixnum}{Appendix~\theappendixnum}
+    \setstretch{1.587}
     \zihao{5}
 }
 {%
@@ -1493,8 +1494,11 @@
     \newcounter{resumesectionnum}
     \newcommand\resumesection[1]{% 
         \stepcounter{resumesectionnum}% 计数
+        \vspace*{3bp}
         \noindent {\heiti\zihao{-3} \textbf{\zhdigits{\theresumesectionnum}} 、 ##1} \par
+        \vspace*{4bp}
     }
+    \setstretch{1.587}
     \zihao{5}
 }
 {%
