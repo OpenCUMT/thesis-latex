@@ -615,7 +615,10 @@
     defernumbers=true, % 延迟编号
     language=auto, % 自动语言检测
     autolang=other*, % 多语言支持
+    gbpunctin=false, % 控制内部标点
+    gbpub=false, % 简化出版信息
 ]{biblatex} % 引用
+\DefineBibliographyStrings{english}{in={}} % 移除 "in:"
 \DeclareSourcemap{
   \maps[datatype=bibtex]{
     \map{
