@@ -834,7 +834,7 @@
 \captionsetup{
     font           = cumtcaptionfont,
     labelsep       = space,
-    skip           = 2bp,
+    skip           = 5bp,
     figureposition = bottom,
     tableposition  = top,
 }
