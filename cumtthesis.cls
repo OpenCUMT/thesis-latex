@@ -616,6 +616,13 @@
     language=auto, % 自动语言检测
     autolang=other*, % 多语言支持
 ]{biblatex} % 引用
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    \map{
+      \step[fieldset=primaryClass, null]
+    }
+  }
+} % 移除primaryClass字段
 \RequirePackage[english]{babel} % 多语言支持
 \RequirePackage{csquotes} % 引用样式
 \RequirePackage[perpage]{footmisc} % 每页重置脚注编号
