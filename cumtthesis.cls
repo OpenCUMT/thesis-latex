@@ -1460,6 +1460,7 @@
     \bichapter*{参考文献}{References}
     \setlength{\bibhang}{0bp}
     \setlength{\bibitemsep}{0bp}
+    \setlength{\biblabelsep}{0.5\ccwd}
     \renewcommand\bibfont{\zihao{5}}
     \begingroup
     \setstretch{1.667} % stretch = lineskip / fontsize = 20bp / 12bp ≈ 1.667
