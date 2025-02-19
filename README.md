@@ -28,7 +28,7 @@
 
 ### 2. Overleaf 编译
 
-直接使用 [Overleaf 模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg)进行在线编译。
+直接使用 [Overleaf 模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg)进行在线编译。(近期将同步更新)
 
 ## 反馈问题
 
@@ -45,12 +45,16 @@
 
 ## 更新日志
 
+### 2025.02.20 V2.3.3
+- 修复目录页码出现 overfull 的问题
+- 修复标题手动换行的 BUG
+
 ### 2025.02.19 V2.3.2
 - 修改 caption skip 为 5 bp
 - 更新参考文献样式：调整 `biblabelsep`；移除`//`改为`.`；移除 `primaryClass` 字段
 
 ### 2025.02.16 V2.3.1
-- 修复BUG
+- 修复 BUG
 
 ### 2025.02.16 V2.3.1-beta
 - 修复图表清单超链接

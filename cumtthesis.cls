@@ -47,8 +47,8 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.2}
-\def\versiondate{2025/02/19}
+\def\version{2.3.3}
+\def\versiondate{2025/02/20}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
 % 错误和警告
@@ -377,7 +377,16 @@
 
     \cs_gset_eq:cN { #1 } \l_tmpa_tl
 }
+
+% 移除换行
+\NewDocumentCommand{\cumt@removenewlines@inplace}{m}{
+    \tl_set:Nx \l_tmpa_tl { \tl_use:c { #1 } }
+    \tl_replace_all:Nnn \l_tmpa_tl {\\} {}
+    \tl_replace_all:Nnn \l_tmpa_tl {\par} {}
+    \cs_gset_eq:cN { #1 } \l_tmpa_tl
+}
 \ExplSyntaxOff
+
 
 % 学位级别
 \def\cumt@degree@level@doctor{博士}
@@ -441,62 +450,70 @@
 \newcommand\cumt@cumt@postcode{\SensitiveInfo{221116}}
 
 % 处理元数据
-\cumt@option@hook*{output}{
-    \IfStrEq{\cumt@output}{inspection}{
+\cumt@option@hook*{output}{%
+    \IfStrEq{\cumt@output}{inspection}{%
         \cumt@if@output@inspectiontrue
-    }{
+    }{%
         \cumt@if@output@inspectionfalse
-        \IfStrEq{\cumt@output}{blindreview}{
+        \IfStrEq{\cumt@output}{blindreview}{%
             \cumt@if@output@blindreviewtrue
-        }{
+        }{%
             \cumt@if@output@blindreviewfalse
         }
     }
 }
-\cumt@option@hook{title}{\title{\cumt@title}}
-\cumt@option@hook{author}{
-    \author{\cumt@author}
-    \SetSensitiveInfo{cumt@author}
+\cumt@option@hook{title}{%
+    \title{\cumt@title@cn}%
+    \edef\cumt@title@cn@formated{\cumt@title@cn}%
+    \cumt@removenewlines@inplace{cumt@title@cn}%
 }
-\cumt@option@hook*{year}{
-    \cumt@format@digits@arabic@inplace{cumt@year}
+\cumt@option@hook{title*}{%
+    \edef\cumt@title@en@formated{\cumt@title@en}%
+    \cumt@removenewlines@inplace{cumt@title@en}%
 }
-\cumt@option@hook*{month}{
-    \cumt@format@digits@arabic@inplace{cumt@month}
+\cumt@option@hook{author}{%
+    \author{\cumt@author}%
+    \SetSensitiveInfo{cumt@author}%
 }
-\cumt@option@hook*{funding-on-cover}{
+\cumt@option@hook*{year}{%
+    \cumt@format@digits@arabic@inplace{cumt@year}%
+}
+\cumt@option@hook*{month}{%
+    \cumt@format@digits@arabic@inplace{cumt@month}%
+}
+\cumt@option@hook*{funding-on-cover}{%
     \newif\ifcumt@if@funding@on@cover
-    \IfStrEq{\cumt@funding@on@cover}{true}{
+    \IfStrEq{\cumt@funding@on@cover}{true}{%
         \cumt@if@funding@on@covertrue
-    }{
+    }{%
         \cumt@if@funding@on@coverfalse
     }
 }
-\cumt@option@hook*{funding}{
-    \cumt@replace@string@inplace{cumt@funding}{;}{；}
-    \gdef\cumt@funding@list{\cumt@funding}
-    \cumt@format@funding@list@inplace{cumt@funding@list}
+\cumt@option@hook*{funding}{%
+    \cumt@replace@string@inplace{cumt@funding}{;}{；}%
+    \gdef\cumt@funding@list{\cumt@funding}%
+    \cumt@format@funding@list@inplace{cumt@funding@list}%
 }
-\cumt@option@hook*{thesis-type}{
-    \cumt@check@degree
+\cumt@option@hook*{thesis-type}{%
+    \cumt@check@degree%
 }
-\cumt@option@hook*{supervisor}{
-    \SetSensitiveInfo{cumt@supervisor@name}
+\cumt@option@hook*{supervisor}{%
+    \SetSensitiveInfo{cumt@supervisor@name}%
 }
-\cumt@option@hook*{co-supervisor}{
-    \SetSensitiveInfo{cumt@cosupervisor@name}
+\cumt@option@hook*{co-supervisor}{%
+    \SetSensitiveInfo{cumt@cosupervisor@name}%
 }
-\cumt@option@hook*{affiliation}{
-    \SetSensitiveInfo{cumt@affiliation}
+\cumt@option@hook*{affiliation}{%
+    \SetSensitiveInfo{cumt@affiliation}%
 }
-\cumt@option@hook*{student-id}{
-    \SetSensitiveInfo{cumt@student@id}
+\cumt@option@hook*{student-id}{%
+    \SetSensitiveInfo{cumt@student@id}%
 }
-\cumt@option@hook*{defense-committee-chair}{
-    \SetSensitiveInfo{cumt@defense@committee@chair}
+\cumt@option@hook*{defense-committee-chair}{%
+    \SetSensitiveInfo{cumt@defense@committee@chair}%
 }
-\cumt@option@hook*{defense-committee-members}{
-    \SetSensitiveInfo{cumt@defense@committee@members}
+\cumt@option@hook*{defense-committee-members}{%
+    \SetSensitiveInfo{cumt@defense@committee@members}%
 }
 
 % 合并多个导师
@@ -939,12 +956,11 @@
         \parbox[c][1.5cm][c]{\textwidth}{
             {\centering\zihao{-2}\cumt@thesis@type@full\par}
         }
-
-        \parbox[c][6cm][c]{\textwidth}{
-            {\centering\setstretch{1.2}\heiti\zihao{2}\cumt@title@cn\par}
-            {\centering\setstretch{1.2}\zihao{2}\cumt@title@en\par}
+        \vfill
+        \parbox[c][6cm][c]{16cm}{
+            {\centering\setstretch{1.2}\heiti\zihao{2}\cumt@title@cn@formated\par}
+            {\centering\setstretch{1.2}\zihao{2}\cumt@title@en@formated\par}
         }
-        
         \vfill
         \ifcumt@if@output@blindreview
             \parbox[c][7cm][c]{\textwidth}{
@@ -1056,8 +1072,8 @@
             } \\
             \vspace{0cm}
             \parbox[c][5.5cm][c]{16.0cm}{
-                {\centering\setstretch{1.2}\heiti\zihao{2}\cumt@title@cn\par}
-                {\centering\setstretch{1.2}\zihao{2}\cumt@title@en\par}
+                {\centering\setstretch{1.2}\heiti\zihao{2}\cumt@title@cn@formated\par}
+                {\centering\setstretch{1.2}\zihao{2}\cumt@title@en@formated\par}
             } \\
             \vspace{\textheight-2.2cm-5cm-5.5cm-5cm-5.0cm-2\arrayrulewidth}
             \parbox[c][5cm][c]{16.0cm}{
@@ -1586,7 +1602,7 @@
             \begin{tabularx}{15.05cm}{|X|X|>{\centering\arraybackslash}m{4cm}|}
                 \hline
                 {\bfseries 论文题目 $\bm \ast$} & {\bfseries 并列题目$\bm \ast$} & {\bfseries 论文语种$\bm \ast$} \\ \hline
-                {\cumt@title@cn}            & {\cumt@title@en}           & {\cumt@language}           \\
+                {\cumt@title@cn} & {\cumt@title@en} & {\cumt@language}           \\
                 \hline
             \end{tabularx}
             }
