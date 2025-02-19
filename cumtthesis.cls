@@ -629,6 +629,7 @@
 \RequirePackage[english]{babel} % 多语言支持
 \RequirePackage{csquotes} % 引用样式
 \RequirePackage[perpage]{footmisc} % 每页重置脚注编号
+\RequirePackage{tocloft} % 目录样式
 \RequirePackage[
     unicode=true, % 启用 Unicode 支持
     bookmarksnumbered=true, % 书签显示编号
@@ -1253,6 +1254,9 @@
 {\titlerule*[3bp]{$\cdot$}\contentspage}
 [\vskip 1.8bp]
 
+% 目录页码宽度
+\cftsetpnumwidth{2em}
+
 % 中文目录
 \setcounter{tocdepth}{1}  % 目录显示深度到二级标题(section)
 \newcommand\MakeCnContents{
@@ -1721,43 +1725,43 @@
     %
     % 三级标题[小节]（中文黑体，数字Times New Roman，四号，行距固定值20磅，段前6磅，段后6磅；两端对齐，大纲3级，编号与标题之间留一个空格；三级标题不需要翻译成英文）
     subsection = {
-        format     = \setlength{\baselineskip}{20bp}\zihao{4}\heiti\raggedright,
-        indent     = 0bp,
-        aftername  = \hspace{0.5\ccwd},
-        beforeskip = 2bp,
-        afterskip  = 6bp,
-        runin      = false,
-    },
+            format     = \setlength{\baselineskip}{20bp}\zihao{4}\heiti\raggedright,
+            indent     = 0bp,
+            aftername  = \hspace{0.5\ccwd},
+            beforeskip = 2bp,
+            afterskip  = 6bp,
+            runin      = false,
+        },
     %
     % 四级标题[次小节]（《撰写规定》无明确要求）（中文黑体，数字Times New Roman，小四号，行距固定值20磅，段前6磅，段后6磅；两端对齐，大纲4级，编号与标题之间留一个空格）
     subsubsection = {
-        format     = \setlength{\baselineskip}{20bp}\zihao{-4}\heiti\raggedright,
-        indent     = 0bp,
-        aftername  = \hspace{0.5\ccwd},
-        beforeskip = 2bp,
-        afterskip  = 6bp,
-        runin      = false,
-    },
+            format     = \setlength{\baselineskip}{20bp}\zihao{-4}\heiti\raggedright,
+            indent     = 0bp,
+            aftername  = \hspace{0.5\ccwd},
+            beforeskip = 2bp,
+            afterskip  = 6bp,
+            runin      = false,
+        },
     % 五级标题[段落]（《撰写规定》无明确要求）（中文宋体，数字Times New Roman，小四号，行距固定值20磅，段前0磅，段后0磅；两端对齐，大纲5级）
     paragraph = {
-        format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
-        number     = \hspace*{-0.4\ccwd}（\arabic{paragraph}）,
-        aftername  = \hspace{0bp},
-        indent     = 2\ccwd,
-        beforeskip = 0bp,
-        afterskip  = 0bp,
-        runin      = true,
-    },
+            format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
+            number     = \hspace*{-0.4\ccwd}（\arabic{paragraph}）,
+            aftername  = \hspace{0bp},
+            indent     = 2\ccwd,
+            beforeskip = 0bp,
+            afterskip  = 0bp,
+            runin      = true,
+        },
     % 六级标题[小段]（《撰写规定》无明确要求）（中文宋体，数字Times New Roman，小四号，行距固定值20磅，段前0磅，段后0磅；两端对齐，大纲6级）
     subparagraph = {
-        format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
-        number     = \circledtext{subparagraph},
-        aftername  = \hspace{0.1\ccwd},
-        indent     = 2\ccwd,
-        beforeskip = 0bp,
-        afterskip  = 0bp,
-        runin      = true,
-    },
+            format     = \setlength{\baselineskip}{20bp}\zihao{-4}\songti\bfseries\raggedright,
+            number     = \circledtext{subparagraph},
+            aftername  = \hspace{0.1\ccwd},
+            indent     = 2\ccwd,
+            beforeskip = 0bp,
+            afterskip  = 0bp,
+            runin      = true,
+        },
 }
 
 % 标题编号深度
