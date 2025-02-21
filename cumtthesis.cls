@@ -47,8 +47,8 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.3}
-\def\versiondate{2025/02/20}
+\def\version{2.3.4}
+\def\versiondate{2025/02/22}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
 % 错误和警告
@@ -911,7 +911,10 @@
 
 % 限制Box大小
 \newcommand\cumt@resizebox@width[2]{
-    \resizebox{\minof{#1}{\widthof{#2}}}{!}{\centering #2}
+    \edef\tmp@arg{#2}% 避免空字符串
+    \ifx\tmp@arg\@empty\else
+        \resizebox{\minof{#1}{\widthof{#2}}}{!}{\centering #2}%
+    \fi
 }
 
 % [本科生/研究生]封面页
@@ -1090,7 +1093,7 @@
                         \makebox[2cm]{作 \hfill 者}\uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\cumt@author}}} & \makebox[2cm]{导 \hfill 师} \uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\cumt@supervisor@name@merged}}} \\
                         \makebox[2cm]{申 \hfill 请 \hfill 学 \hfill 位}\uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\cumt@degree@applied}}} & \makebox[2cm]{培 \hfill 养 \hfill 单 \hfill 位} \uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\cumt@affiliation}}} \\
                         \makebox[2cm]{学 \hfill 科 \hfill 专 \hfill 业}\uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\cumt@major}}} & \makebox[2cm]{研 \hfill 究 \hfill 方 \hfill 向} \uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\cumt@field}}} \\
-                        \makebox[3.4cm]{答辩委员会主席}\uline{\makebox[3.9cm]{\cumt@resizebox@width{3.7cm}{\centering \cumt@defense@committee@chair}}} & \makebox[2cm]{评 \hfill 阅 \hfill 人} \uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\centering\cumt@reviewer}}} \\
+                        \makebox[3.4cm]{答辩委员会主席}\uline{\makebox[3.9cm]{\cumt@resizebox@width{3.7cm}{\cumt@defense@committee@chair}}} & \makebox[2cm]{评 \hfill 阅 \hfill 人} \uline{\makebox[5.3cm]{\cumt@resizebox@width{5.1cm}{\cumt@reviewer}}} \\
                     \end{tabularx}
                 \fi
             } \\
