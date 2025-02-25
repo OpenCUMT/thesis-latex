@@ -44,6 +44,8 @@
 欢迎在 [Issues](https://github.com/senli1073/cumtthesis/issues) 中提出新 issue，并详细描述您的建议。
 
 ## 更新日志
+### 2025.02.22 V2.3.4
+- 修复元数据输入空值报错问题
 
 ### 2025.02.20 V2.3.3
 - 修复目录页码出现 overfull 的问题
