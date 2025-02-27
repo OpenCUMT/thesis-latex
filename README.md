@@ -134,4 +134,4 @@
 
 ## License
 
-Copyright C.Zhang & S.Li, CUMT. 2024-2025. Licensed under an MIT license.
+Copyright C.Zhang & S.Li, CUMT. 2024-2025. Licensed under an LPPL license.
