@@ -47,8 +47,8 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.4}
-\def\versiondate{2025/02/22}
+\def\version{2.3.5}
+\def\versiondate{2025/03/02}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
 % 错误和警告
@@ -882,6 +882,7 @@
 \renewenvironment{table}[1][]{%
     \buildintable[#1]%
     \zihao{5}%
+    \renewcommand\arraystretch{1.259}
 }{%
     \buildinendtable
 }
