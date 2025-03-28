@@ -22,33 +22,15 @@
 %          \/____/                  ~~                       \/____/    
 %
 %--------------
-% MIT License
+% The LaTeX Project Public License Version 1.3c  2008-05-04
 %
 % Copyright (c) 2024-2025 by C.Zhang & S.Li, CUMT.
-%
-% Permission is hereby granted, free of charge, to any person obtaining a copy
-% of this software and associated documentation files (the "Software"), to deal
-% in the Software without restriction, including without limitation the rights
-% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-% copies of the Software, and to permit persons to whom the Software is
-% furnished to do so, subject to the following conditions:
-%
-% The above copyright notice and this permission notice shall be included in all
-% copies or substantial portions of the Software.
-%
-% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-% SOFTWARE.
 %-------------------------------------------------------------------------------------------------
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.5}
-\def\versiondate{2025/03/02}
+\def\version{2.3.6}
+\def\versiondate{2025/03/28}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
 % 错误和警告
@@ -433,16 +415,16 @@
     \fi
     
 }
-\NewDocumentCommand{\SensitiveInfo}{m O{***}}{
-    \ifcumt@if@output@inspection
-        #2
-    \else
-        \ifcumt@if@output@blindreview
-            #2
-        \else
-            #1
-        \fi
-    \fi
+\NewDocumentCommand{\SensitiveInfo}{m O{***}}{%
+    \ifcumt@if@output@inspection%
+        #2%
+    \else%
+        \ifcumt@if@output@blindreview%
+            #2%
+        \else%
+            #1%
+        \fi%
+    \fi%
 }
 \newcommand\cumt@cumt@name{\SensitiveInfo{中国矿业大学}}
 \newcommand\cumt@cumt@code{\SensitiveInfo{10290}}
@@ -996,7 +978,7 @@
             }
             \vfill
             \parbox[c][4cm][c]{\textwidth}{
-                {\centering\kaiti\zihao{-2} \cumt@cumt@name \par}
+                {\centering\kaiti\zihao{-2}\cumt@cumt@name \par}
                 {\centering\kaiti\zihao{-2}\zhdigits{\cumt@year}年\zhnumber{\cumt@month}月 \par}
             }
         \fi
@@ -1016,7 +998,7 @@
         \chapter*{学位论文使用授权声明}
         {   \kaiti
             \setlength{\baselineskip}{20bp}
-            本人完全了解 \cumt@cumt@name 有关保留、使用学位论文的规定，同意本人所撰写的学位论文的使用授权按照学校的管理规定处理：\par
+            本人完全了解\cumt@cumt@name 有关保留、使用学位论文的规定，同意本人所撰写的学位论文的使用授权按照学校的管理规定处理：\par
             作为申请学位的条件之一，学位论文著作权拥有者须授权所在学校拥有学位论文的部分使用权，即：\ding{172}学校档案馆和图书馆有权保留学位论文的纸质版和电子版，可以使用影印、缩印或扫描等复制手段保存和汇编学位论文；\ding{173}为教学和科研目的，学校档案馆和图书馆可以将公开的学位论文作为资料在档案馆、图书馆等场所或在校园网上供校内师生阅读、浏览。另外，根据有关法规，同意中国国家图书馆保存研究生学位论文。\par
             （保密的学位论文在解密后适用本授权书）。\par
         }
@@ -1038,7 +1020,7 @@
         \bichapter*{学位论文原创性声明}{Declaration of \cumt@thesis@type@en \ Originality}
         {
             \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
-            本人郑重声明：所呈交的学位论文《 \cumt@title@cn 》，是本人在导师指导下，在 \cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。对本文的研究做出贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
+            本人郑重声明：所呈交的学位论文《\cumt@title@cn 》，是本人在导师指导下，在\cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。对本文的研究做出贡献的个人和集体，均已在文中以明确方式标明。本人完全意识到本声明的法律结果由本人承担。
         }
 
         \vspace{24bp}
@@ -1071,8 +1053,8 @@
                 \fi
             } \\
             \parbox[c][5cm][c]{16.0cm}{
-                {\centering\huawenxingkai\zihao{1} \cumt@cumt@name \par}
-                {\centering\lishu\zihao{1} \cumt@thesis@type@full \par}
+                {\centering\huawenxingkai\zihao{1}\cumt@cumt@name \par}
+                {\centering\lishu\zihao{1}\cumt@thesis@type@full \par}
             } \\
             \vspace{0cm}
             \parbox[c][5.5cm][c]{16.0cm}{
@@ -1119,7 +1101,7 @@
     \chapter*{毕业设计（论文）原创性声明}
     {
         \kaiti\zihao{-4}\setlength{\baselineskip}{20bp}
-        本人郑重声明：所呈交的毕业设计（论文）《 \cumt@title@cn 》，是本人在指导教师指导下，在 \cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。本人完全意识到本声明的法律结果由本人承担。
+        本人郑重声明：所呈交的毕业设计（论文）《\cumt@title@cn 》，是本人在指导教师指导下，在\cumt@cumt@name 攻读学位期间进行的研究工作所取得的成果。据我所知，除文中已经标明引用的内容外，本论文不包含任何其他个人或集体已经发表或撰写过的研究成果。本人完全意识到本声明的法律结果由本人承担。
     }
 
     \vspace{24bp}
@@ -1130,7 +1112,7 @@
     \cumt@clearpage
 
     \vspace*{0bp}
-    {\centering\linespread{1}\zihao{-2}\heiti\bfseries \cumt@cumt@name\par}
+    {\centering\linespread{1}\zihao{-2}\heiti\bfseries\cumt@cumt@name\par}
     \vspace{5bp}
     {\centering\linespread{1}\zihao{-2}\heiti\bfseries 本科毕业设计（论文）诚信承诺书\par}
     \vspace{5bp}
@@ -1142,13 +1124,13 @@
         {\hspace{0.55\textwidth}年\hspace{1.5\ccwd}月\hspace{1.5\ccwd}日}\par
     }
     \vspace{40bp}
-    {\centering\linespread{1}\zihao{-2}\heiti\bfseries \cumt@cumt@name\par}
+    {\centering\linespread{1}\zihao{-2}\heiti\bfseries\cumt@cumt@name\par}
     \vspace{5bp}
     {\centering\linespread{1}\zihao{-2}\heiti\bfseries 毕业设计（论文）使用授权声明\par}
     \vspace{5bp}
     {   \kaiti
         \setlength{\baselineskip}{20bp} % 固定行间距20磅
-        本人完全了解 \cumt@cumt@name 有关收集、保留和使用本人所送交的毕业设计（论文）的规定，即：本科生在校攻读学位期间毕业设计（论文）工作的知识产权单位属 \cumt@cumt@name 。学校有权保留并向国家有关部门或机构送交毕业设计（论文）的复印件和电子版，允许论文被查阅和借阅，可以公布论文的全部或部分内容，可以采用影印、缩印或扫描等复制手段保存、汇编论文。保密的论文在解密后适用本声明。\par
+        本人完全了解\cumt@cumt@name 有关收集、保留和使用本人所送交的毕业设计（论文）的规定，即：本科生在校攻读学位期间毕业设计（论文）工作的知识产权单位属\cumt@cumt@name 。学校有权保留并向国家有关部门或机构送交毕业设计（论文）的复印件和电子版，允许论文被查阅和借阅，可以公布论文的全部或部分内容，可以采用影印、缩印或扫描等复制手段保存、汇编论文。保密的论文在解密后适用本声明。\par
         论文涉密情况：\par
         \IfStrEq{\cumt@security@level}{公开}{
             \cumt@checkedbox 不保密\par
@@ -1584,7 +1566,7 @@
             \arrayrulecolor{black}
             {
                 \zihao{5}
-                \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{2.0cm}|>{\centering\arraybackslash}m{1.3cm}|>{\centering\arraybackslash}m{2.5cm}|>{\centering\arraybackslash}m{1.3cm}|X|}
+                \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{2.3cm}|>{\centering\arraybackslash}m{1.3cm}|>{\centering\arraybackslash}m{2.3cm}|>{\centering\arraybackslash}m{1.3cm}|X|}
                     \hline
                     {\bfseries 关键词$\bm \ast$} & {\bfseries 密级$\bm \ast$} & {\bfseries 中图分类号$\bm \ast$} & {\bfseries UDC} & {\bfseries 论文资助} \\ \hline
                     {\@cnkeywords} & {\cumt@security@level} & {\cumt@clc} & {\cumt@udc} & {\cumt@funding}  \\ \hline
