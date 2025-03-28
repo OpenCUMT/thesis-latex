@@ -44,6 +44,12 @@
 欢迎在 [Issues](https://github.com/senli1073/cumtthesis/issues) 中提出新 issue，并详细描述您的建议。
 
 ## 更新日志
+### 2025.03.28 V2.3.6
+- 修复`\SensitiveInfo`导致多余空格的 BUG
+
+### 2025.03.02 V2.3.5
+- 修正表格默认间距
+
 ### 2025.02.22 V2.3.4
 - 修复元数据输入空值报错问题
 
