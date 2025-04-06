@@ -25,12 +25,14 @@
 % The LaTeX Project Public License Version 1.3c  2008-05-04
 %
 % Copyright (c) 2024-2025 by C.Zhang & S.Li, CUMT.
+%
+% https://github.com/senli1073/cumtthesis/
 %-------------------------------------------------------------------------------------------------
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\def\version{2.3.6}
-\def\versiondate{2025/03/28}
+\def\version{2.3.7}
+\def\versiondate{2025/04/06}
 \ProvidesClass{cumtthesis}[\versiondate\space v\version\space CUMT Thesis Template]
 
 % 错误和警告
@@ -835,6 +837,10 @@
 % 公式编号
 \renewcommand\theequation{\thechapter-\arabic{equation}}
 
+% 公式间距
+\setlength{\abovedisplayskip}{10bp plus 3bp minus 3bp}
+\setlength{\belowdisplayskip}{10bp plus 3bp minus 3bp}
+
 % 图表格式
 \renewcommand\textfraction{0.15}
 \renewcommand\topfraction{0.85}
@@ -852,6 +858,9 @@
 \captionsetup[figure][bi-second]{name=Figure}
 \captionsetup[table][bi-first]{name=表}
 \captionsetup[table][bi-second]{name=Table}
+\setlength{\floatsep}{5bp plus 2bp minus 2bp}
+\setlength{\textfloatsep}{5bp plus 2bp minus 2bp}
+\setlength{\intextsep}{5bp plus 2bp minus 2bp}
 \renewcommand\thetable{\arabic{chapter}-\arabic{table}}
 \renewcommand\thefigure{\arabic{chapter}-\arabic{figure}}
 \renewcommand\tabularxcolumn[1]{>{\centering\arraybackslash}m{#1}}
@@ -1400,7 +1409,7 @@
     \@starttoc{\l_tmpc_str}
 
     \zihao{5}
-    \setlength{\tabcolsep}{0bp}
+    % \setlength{\tabcolsep}{0bp}
     \begin{center}
         \disablecite
         \begin{longtable}{@{}|C{m}{2.34cm}|C{m}{\textwidth-2.34cm-1.25cm-4\arrayrulewidth}|C{m}{1.25cm}|@{}}

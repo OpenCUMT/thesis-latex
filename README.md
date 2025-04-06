@@ -44,6 +44,10 @@
 欢迎在 [Issues](https://github.com/senli1073/cumtthesis/issues) 中提出新 issue，并详细描述您的建议。
 
 ## 更新日志
+### 2025.04.06 V2.3.7
+- 调整浮动体、公式间距
+- 调整图表清单的`\tabcolsep`
+
 ### 2025.03.28 V2.3.6
 - 修复`\SensitiveInfo`导致多余空格的 BUG
 
