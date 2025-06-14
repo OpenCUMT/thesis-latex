@@ -2,7 +2,7 @@
 
 ![Last Commit](https://img.shields.io/github/last-commit/OpenCUMT/thesis-latex)
 [![GitHub release](https://img.shields.io/github/v/release/OpenCUMT/thesis-latex)](https://github.com/OpenCUMT/thesis-latex/releases/latest)
-[![License](https://img.shields.io/github/license/OpenCUMT/thesis-latex)](https://github.com/OpenCUMT/thesis-latex/blob/master/README.md)
+[![License](https://img.shields.io/github/license/OpenCUMT/thesis-latex)](https://github.com/OpenCUMT/thesis-latex/blob/main/LICENSE)
 
 ## 简介
 
