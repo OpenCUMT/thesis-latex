@@ -26,7 +26,7 @@
 %
 % Copyright (c) 2024-2025 by C.Zhang & S.Li, CUMT.
 %
-% https://github.com/senli1073/cumtthesis/
+% https://github.com/OpenCUMT/thesis-latex/
 %-------------------------------------------------------------------------------------------------
 
 
