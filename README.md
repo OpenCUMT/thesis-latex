@@ -34,6 +34,10 @@
 
 直接使用 [Overleaf 模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg) 进行在线编译。（近期将同步更新）
 
+## 帮助
+
+如果有更多问题，请查看[帮助文档](https://thesis-latex.opencumt.org/)
+
 ## 反馈问题
 
 如果你发现了 BUG，请在 [Issues](https://github.com/OpenCUMT/thesis-latex/issues) 界面[提交 BUG](https://github.com/OpenCUMT/thesis-latex/issues/new?template=bug_report.yml).
