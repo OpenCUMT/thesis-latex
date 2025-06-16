@@ -34,6 +34,13 @@
 
 直接使用 [Overleaf 模板](https://www.overleaf.com/latex/templates/10290-zhong-guo-kuang-ye-da-xue-shuo-shi-sheng-bi-ye-lun-wen-mo-ban/qwggynbswxwg) 进行在线编译。（近期将同步更新）
 
+## 已知问题
+- [ ] 学位论文数据集如果关键词太长，可能会跨页，尝试把关键词那一列改成自动列宽
+- [ ] 确定数据集中论文总页数的填写标准，是填写到参考文献还是数据集那一页
+- [ ] 打印版空白页也占页码的问题，确定一下大家的习惯，如果不占页码，可以修改一下
+- [ ] 英文章节标题中无法实现断词换行
+- [ ] 二级标题（section）的英文换行缩进问题
+
 ## 帮助
 
 如果有更多问题，请查看[帮助文档](https://thesis-latex.opencumt.org/)
