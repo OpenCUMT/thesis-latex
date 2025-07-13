@@ -1,220 +1,232 @@
-name: Build LaTeX Thesis
+name: Build CUMT LaTeX Thesis
 
 on: 
   push:
-    branches: [ main, dev-* ]
+    branches: [main, dev-*]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 env:
-  # 使用完整 TeX Live 方案确保所有依赖包可用
-  TEXLIVE_INSTALL: scheme-full
+  # 模块化包管理
+  CORE_PKGS: "scheme-full latexmk l3build"
+  CJK_PKGS: "ctex xecjk zhnumber cjk cjkpunct fandol"
+  FONT_PKGS: "tex-gyre xits noto-cjk noto-cjk-extra"
+  BIB_PKGS: "biblatex biber biblatex-gb7714-2015"
+  UTIL_PKGS: "algorithm2e mhchem upgreek makecell multirow subcaption colortbl tabularx tocloft titletoc footmisc fancyhdr microtype etoolbox enumitem lastpage ulem geometry emptypage indentfirst listings"
+  
+  # 编译配置
+  COMPILER: "xelatex"
+  BIBER: "biber"
+  MAIN_FILE: "thesis.tex"
 
 jobs:
-
-  build:
-    name: Build Thesis PDF
+  setup:
+    name: Setup TeX Live
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # 获取完整的git历史，用于版本标记
+          fetch-depth: 0
       
-      - name: Setup TeX Live with comprehensive packages
+      - name: Install TeX Live with required packages
+        uses: TeX-Live/setup-texlive-action@v3
+        with:
+          packages: ${{ env.CORE_PKGS }} ${{ env.CJK_PKGS }} ${{ env.FONT_PKGS }} ${{ env.BIB_PKGS }} ${{ env.UTIL_PKGS }}
+          update-all-packages: true
+      
+      - name: Install system fonts
         run: |
-          # 安装 TeX Live 基础包
           sudo apt-get update
-          sudo apt-get install -y texlive-full texlive-lang-chinese texlive-xetex
-          
-          # 安装中文字体支持
-          sudo apt-get install -y fonts-wqy-microhei fonts-wqy-zenhei \
+          sudo apt-get install -y \
+            fonts-wqy-microhei fonts-wqy-zenhei \
             fonts-arphic-ukai fonts-arphic-uming \
-            fonts-noto-cjk fonts-noto-cjk-extra \
-            xfonts-wqy ttf-wqy-microhei ttf-wqy-zenhei
+            fonts-noto-cjk fonts-noto-cjk-extra
           
-          # 更新 tlmgr
-          sudo tlmgr update --self --all || echo "tlmgr update failed, continuing..."
-          
-          # 安装额外的必需包
-          sudo tlmgr install \
-            ctex cjk cjkpunct xecjk zhmetrics zhnumber \
-            fandol tex-gyre arphic-ttf \
-            algorithm2e mhchem upgreek makecell multirow \
-            subcaption colortbl tabularx tocloft titletoc \
-            footmisc fancyhdr microtype etoolbox enumitem \
-            lastpage fontspec ulem geometry emptypage \
-            indentfirst listings xpatch verbatim filehook \
-            kvdefinekeys kvsetkeys kvoptions bicaption \
-            csquotes babel biblatex biber \
-            was ptex-fontmaps ptex-base uptex-base \
-            dvipdfmx xdvipdfmx latex-bin xetex \
-            l3kernel l3packages l3backend expl3 \
-            unicode-data hyphen-base cm-super lm \
-            || echo "某些包可能已经存在，继续..."
-          
-          # 更新字体缓存
-          fc-cache -fv
-          
-          # 检查可用字体
-          echo "=== 可用的中文字体 ==="
-          fc-list :lang=zh-cn | head -10 || echo "未找到中文字体"
-          
-          # 创建字体目录并复制项目中的字体文件
-          sudo mkdir -p /usr/share/fonts/truetype/cumt-thesis
+          # 安装项目自定义字体
           if [ -d "Assets/Fonts" ]; then
-            echo "=== 安装项目字体文件 ==="
-            sudo cp Assets/Fonts/*.ttf /usr/share/fonts/truetype/cumt-thesis/ 2>/dev/null || echo "部分字体文件可能不存在"
-            # 更新字体缓存
+            sudo mkdir -p /usr/share/fonts/truetype/cumt-thesis
+            sudo cp Assets/Fonts/*.ttf /usr/share/fonts/truetype/cumt-thesis/ || echo "字体安装完成（部分文件可能缺失）"
             fc-cache -fv
-            echo "=== 项目字体安装完成 ==="
-            fc-list | grep -i sim || echo "SimSun字体未找到，但继续编译"
-          else
-            echo "=== 未找到Assets/Fonts目录 ==="
           fi
-      
+          
+          echo "=== 可用中文字体 ==="
+          fc-list :lang=zh-cn | head -10
+
+  build:
+    name: Build Thesis
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: src
+          
       - name: Validate project structure
+        working-directory: ./src
         run: |
-          echo "=== 验证项目结构 ==="
-          echo "检查主要文件..."
-          [ -f "thesis.tex" ] && echo "✅ thesis.tex 存在" || echo "❌ thesis.tex 不存在"
-          [ -f "cumtthesis.cls" ] && echo "✅ cumtthesis.cls 存在" || echo "❌ cumtthesis.cls 不存在"
-          [ -f "bibliography.bib" ] && echo "✅ bibliography.bib 存在" || echo "❌ bibliography.bib 不存在"
+          echo "验证项目结构..."
+          required_files=("thesis.tex" "cumtthesis.cls" "bibliography.bib")
+          required_dirs=("Chapters" "Figures")
           
-          echo "检查章节文件..."
-          [ -d "Chapters" ] && echo "✅ Chapters 目录存在" || echo "❌ Chapters 目录不存在"
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "::error::缺失必要文件: $file"
+              exit 1
+            fi
+          done
           
-          echo "检查图表文件..."
-          [ -d "Figures" ] && echo "✅ Figures 目录存在" || echo "❌ Figures 目录不存在"
+          for dir in "${required_dirs[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "::warning::缺失目录: $dir (但继续编译)"
+            fi
+          done
           
-          echo "检查字体文件..."
-          [ -d "Assets/Fonts" ] && echo "✅ Assets/Fonts 目录存在" || echo "❌ Assets/Fonts 目录不存在"
-          
-          echo "=== 项目结构验证完成 ==="
-      
-      - name: Compile thesis (XeLaTeX with multiple passes)
+          echo "项目结构验证通过"
+
+      - name: Compile with latexmk
+        working-directory: ./src
         run: |
-          echo "开始编译中国矿业大学学位论文..."
+          # 创建latexmk配置文件
+          cat > latexmkrc << 'EOF'
+          $pdf_mode = 1;
+          $bibtex_use = 2;
+          $postscript_mode = $dvi_mode = 0;
+          $pdflatex = "xelatex -interaction=nonstopmode -halt-on-error %O %S";
+          EOF
           
-          # 设置编译参数
-          export TEXMFCACHE=/tmp/texmf-cache
-          mkdir -p $TEXMFCACHE
+          latexmk -pdfxe -outdir=../build $MAIN_FILE
           
-          # 显示可用的字体（调试用）
-          echo "=== 检查字体可用性 ==="
-          fc-list | grep -i sim || echo "未找到SimSun等字体，但继续编译..."
-          fc-list | grep -i arial || echo "未找到Arial字体，但继续编译..."
-          fc-list | grep -i "times new roman" || echo "未找到Times New Roman字体，但继续编译..."
-          
-          # 设置 LaTeX 编译环境变量
-          export OSFONTDIR=/usr/share/fonts:/usr/local/share/fonts:$HOME/.fonts:./Assets/Fonts
-          
-          echo "第一次编译（生成辅助文件）..."
-          xelatex -interaction=nonstopmode -halt-on-error thesis.tex || {
-            echo "第一次编译失败，查看错误日志..."
-            if [ -f thesis.log ]; then
-              tail -50 thesis.log
-            fi
-            echo "尝试继续编译..."
-          }
-          
-          echo "运行biber处理参考文献..."
-          if [ -f thesis.bcf ]; then
-            biber thesis || {
-              echo "biber处理失败，但继续编译..."
-              echo "检查是否有参考文献文件..."
-              ls -la *.bib || echo "未找到.bib文件"
-            }
-          else
-            echo "未找到.bcf文件，跳过biber处理"
-          fi
-          
-          echo "第二次编译（处理参考文献和交叉引用）..."
-          xelatex -interaction=nonstopmode thesis.tex || {
-            echo "第二次编译出现警告或错误，但尝试继续..."
-            if [ -f thesis.log ]; then
-              echo "=== 编译日志最后50行 ==="
-              tail -50 thesis.log
-            fi
-          }
-          
-          echo "第三次编译（完善交叉引用）..."
-          xelatex -interaction=nonstopmode thesis.tex || {
-            echo "第三次编译出现警告或错误..."
-            if [ -f thesis.log ]; then
-              echo "=== 编译日志最后50行 ==="
-              tail -50 thesis.log
-            fi
-          }
-      
-      - name: Check if PDF was generated
-        run: |
-          if [ -f thesis.pdf ]; then
-            echo "✅ PDF 生成成功"
-            ls -lh thesis.pdf
-            file thesis.pdf
-            echo "PDF文件信息："
-            pdfinfo thesis.pdf || echo "无法获取PDF信息，但文件存在"
-          else
-            echo "❌ PDF 生成失败"
-            echo "=== 列出当前目录文件 ==="
-            ls -la
-            echo "=== 检查辅助文件 ==="
-            ls -la *.aux *.log *.out 2>/dev/null || echo "未找到某些辅助文件"
-            echo "=== 完整编译日志 ==="
-            if [ -f thesis.log ]; then
-              cat thesis.log
-            else
-              echo "未找到thesis.log文件"
-            fi
+          # 检查输出文件
+          if [ ! -f "../build/thesis.pdf" ]; then
+            echo "::error::PDF生成失败"
+            echo "=== 编译日志 ==="
+            cat ../build/*.log
             exit 1
           fi
-      
-      - name: Upload compilation logs (on failure)
-        if: failure()
+          
+          echo "编译成功！PDF大小: $(du -h ../build/thesis.pdf | cut -f1)"
+
+      - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
-          name: compilation-logs
-          path: |
-            *.log
-            *.aux
-            *.out
-            *.blg
-            *.bbl
-          retention-days: 7
-      
-      - name: Upload thesis PDF
-        uses: actions/upload-artifact@v4
-        with:
-          name: cumt-thesis-pdf
-          path: thesis.pdf
+          name: thesis-pdf
+          path: build/thesis.pdf
           retention-days: 30
-      
-      - name: Create release package
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+      - name: Archive build logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: build/*.log
+          retention-days: 7
+
+  test:
+    name: Cross-Platform Test
+    needs: setup
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        tex-distro: ["tl", "mactex"] # TeX Live 和 MacTeX
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Install TeX Live
+        if: ${{ matrix.tex-distro == 'tl' }}
+        uses: TeX-Live/setup-texlive-action@v3
+        with:
+          packages: ${{ env.CORE_PKGS }} ${{ env.CJK_PKGS }} ${{ env.BIB_PKGS }}
+          update-all-packages: true
+          
+      - name: Install MacTeX
+        if: ${{ matrix.os == 'macos-latest' && matrix.tex-distro == 'mactex' }}
         run: |
-          # 获取版本信息
+          brew install mactex-no-gui
+          eval "$(/usr/libexec/path_helper)"
+          
+      - name: Minimal compile test
+        run: |
+          # 创建最小测试文档
+          cat > test.tex << 'EOF'
+          \documentclass{article}
+          \usepackage{ctex}
+          \begin{document}
+          \title{跨平台测试}
+          \author{中国矿业大学}
+          \maketitle
+          \section{测试}
+          这是一个编译测试。\LaTeX
+          \end{document}
+          EOF
+          
+          xelatex -interaction=nonstopmode test.tex
+          
+          if [ ! -f "test.pdf" ]; then
+            echo "::error::在 ${{ matrix.os }}/${{ matrix.tex-distro }} 上编译失败"
+            exit 1
+          fi
+
+  release:
+    name: Create Release
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Determine version
+        id: version
+        run: |
           if git describe --tags --exact-match HEAD 2>/dev/null; then
             version=$(git describe --tags --exact-match HEAD)
           else
-            version="main-$(git rev-parse --short HEAD)"
+            commit_short=$(git rev-parse --short HEAD)
+            version="v0.0.0-$commit_short"
           fi
+          echo "version=$version" >> $GITHUB_OUTPUT
           
-          echo "创建发布包: cumt-thesis-$version.zip"
+      - name: Create release package
+        run: |
+          # 创建包含源码和PDF的发布包
+          mkdir -p cumt-thesis-${{ steps.version.outputs.version }}
           
-          # 创建发布包，排除不必要的文件
-          zip -r "cumt-thesis-$version.zip" . \
-            -x "*.git*" "*.github*" "*.vscode*" "*.DS_Store" \
-            -x "*.log" "*.aux" "*.out" "*.toc" "*.lof" "*.lot" \
-            -x "*.fls" "*.fdb_latexmk" "*.bbl" "*.blg" "*.run.xml" \
-            -x "*.bcf" "*.synctex.gz" "*.nav" "*.snm" "*.vrb"
-      
-      - name: Upload release package
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+          # 复制源码（排除无关文件）
+          rsync -av \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.vscode' \
+            --exclude='*.log' \
+            --exclude='*.aux' \
+            --exclude='*.pdf' \
+            --exclude='build/' \
+            ./ cumt-thesis-${{ steps.version.outputs.version }}/
+          
+          # 添加编译好的PDF
+          cp build/thesis.pdf cumt-thesis-${{ steps.version.outputs.version }}/cumt-thesis-${{ steps.version.outputs.version }}.pdf
+          
+          # 创建ZIP包
+          zip -r cumt-thesis-${{ steps.version.outputs.version }}.zip cumt-thesis-${{ steps.version.outputs.version }}
+          
+      - name: Upload release assets
         uses: actions/upload-artifact@v4
         with:
-          name: cumt-thesis-release
-          path: cumt-thesis-*.zip
+          name: release-package
+          path: |
+            cumt-thesis-${{ steps.version.outputs.version }}.zip
           retention-days: 90
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: cumt-thesis-${{ steps.version.outputs.version }}.zip
+          generate_release_notes: true
