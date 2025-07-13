@@ -8,26 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  # 中文支持包
-  XECJK_PKGS: fontspec xecjk ulem xetex
-  CTEX_PKGS: cjk ctex everysel zhnumber
-  # 参考文献支持 (国标GB7714-2015)
-  BIBLATEX_PKGS: biber biblatex biblatex-gb7714-2015
-  # 页面布局和超链接
-  HYPERREF_PKGS: pdflscape hyperref
-  # 基础包
-  REQUIRED_PKGS: >-
-    scheme-basic bibunits bigfoot caption enumitem
-    environ etoolbox filehook footmisc notoccite pdfpages threeparttable
-    titlesec trimspaces unicode-math geometry fancyhdr
-  # 中文字体
-  FONT_PKGS: fandol tex-gyre xits
-  # 数学和表格扩展包  
-  EXTRA_PKGS: algorithms booktabs ntheorem siunitx float fp multirow amsmath amsfonts
-  # 代码和颜色支持
-  DOC_PKGS: listings xcolor
-  # 构建工具
-  BIN_PKGS: latexmk
+  # 使用完整 TeX Live 方案确保所有依赖包可用
+  TEXLIVE_INSTALL: scheme-full
 
 jobs:
   build:
@@ -40,11 +22,6 @@ jobs:
       - name: Setup TeX Live
         uses: TeX-Live/setup-texlive-action@v3
         with:
-          packages: >-
-            ${{ env.XECJK_PKGS }} ${{ env.CTEX_PKGS }} ${{ env.BIBLATEX_PKGS }}
-            ${{ env.HYPERREF_PKGS }} ${{ env.REQUIRED_PKGS }} ${{ env.FONT_PKGS }}
-            ${{ env.EXTRA_PKGS }} ${{ env.DOC_PKGS }} ${{ env.BIN_PKGS }}
-            xstring
           update-all-packages: true
           cache: true
       
@@ -111,11 +88,6 @@ jobs:
       - name: Setup TeX Live
         uses: TeX-Live/setup-texlive-action@v3
         with:
-          packages: >-
-            ${{ env.XECJK_PKGS }} ${{ env.CTEX_PKGS }} ${{ env.BIBLATEX_PKGS }}
-            ${{ env.HYPERREF_PKGS }} ${{ env.REQUIRED_PKGS }} ${{ env.FONT_PKGS }}
-            ${{ env.EXTRA_PKGS }} ${{ env.DOC_PKGS }} ${{ env.BIN_PKGS }}
-            xstring
           update-all-packages: true
           cache: true
       
@@ -211,62 +183,3 @@ jobs:
           else
             echo "⚠️  请检查模板版本信息"
           fi
-
-  # 自动发布
-  release:
-    name: Create Release
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    needs: [build, test-compatibility, validate-template]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: cumt-thesis-pdf
-          
-      - name: Download release package  
-        uses: actions/download-artifact@v4
-        with:
-          name: cumt-thesis-release
-      
-      - name: Extract version
-        id: version
-        run: |
-          version=${GITHUB_REF#refs/tags/}
-          echo "version=$version" >> $GITHUB_OUTPUT
-          echo "发布版本: $version"
-      
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.version.outputs.version }}
-          name: CUMT Thesis Template ${{ steps.version.outputs.version }}
-          body: |
-            ## 中国矿业大学学位论文 LaTeX 模板 ${{ steps.version.outputs.version }}
-            
-            ### 📦 下载说明
-            - `thesis.pdf` - 编译好的示例论文
-            - `cumt-thesis-${{ steps.version.outputs.version }}.zip` - 完整模板包
-            
-            ### 🛠 使用方法
-            1. 下载并解压模板包
-            2. 编辑 `thesis.tex` 配置论文信息
-            3. 在 `Chapters/` 目录下编写各章节内容
-            4. 运行 `latexmk -xelatex thesis.tex` 编译
-            
-            ### 📋 系统要求
-            - XeLaTeX 引擎
-            - TeX Live 2023 或更新版本
-            - 支持中文的操作系统
-            
-            详细说明请参考模板内的 README.md 文件。
-          files: |
-            thesis.pdf
-            cumt-thesis-*.zip
-          draft: false
-          prerelease: false
