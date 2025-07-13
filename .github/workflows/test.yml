@@ -44,6 +44,7 @@ jobs:
             ${{ env.XECJK_PKGS }} ${{ env.CTEX_PKGS }} ${{ env.BIBLATEX_PKGS }}
             ${{ env.HYPERREF_PKGS }} ${{ env.REQUIRED_PKGS }} ${{ env.FONT_PKGS }}
             ${{ env.EXTRA_PKGS }} ${{ env.DOC_PKGS }} ${{ env.BIN_PKGS }}
+            xstring
           update-all-packages: true
           cache: true
       
@@ -114,6 +115,7 @@ jobs:
             ${{ env.XECJK_PKGS }} ${{ env.CTEX_PKGS }} ${{ env.BIBLATEX_PKGS }}
             ${{ env.HYPERREF_PKGS }} ${{ env.REQUIRED_PKGS }} ${{ env.FONT_PKGS }}
             ${{ env.EXTRA_PKGS }} ${{ env.DOC_PKGS }} ${{ env.BIN_PKGS }}
+            xstring
           update-all-packages: true
           cache: true
       
