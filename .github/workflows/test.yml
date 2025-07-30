@@ -1,4 +1,4 @@
-name: Build and Test CUMT LaTeX Thesis
+name: Build CUMT LaTeX Thesis
 
 on: 
   push:
@@ -24,10 +24,16 @@ env:
   DOC_PKGS: hologo hypdoc listings xcolor
   EXAMPLE_PLGS: float fp metalogo multirow mwe
 
+  # 编译配置
+  COMPILER: "xelatex"
+  BIBER: "biber"
+  MAIN_FILE: "thesis.tex"
+
 jobs:
   setup:
-    name: Setup Environment
+    name: Setup TeX Live
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -45,7 +51,7 @@ jobs:
           sudo apt-get install -y \
             fonts-wqy-microhei fonts-wqy-zenhei \
             fonts-arphic-ukai fonts-arphic-uming \
-            fonts-noto-cjk
+            fonts-noto-cjk fonts-noto-cjk-extra
 
           # 安装项目自定义字体
           if [ -d "Assets/Fonts" ]; then
@@ -58,14 +64,13 @@ jobs:
           fc-list :lang=zh-cn | head -10
 
   build:
-    name: Build Thesis
-    needs: setup
+    name: Build and Release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          path: src
+          fetch-depth: 0
 
       - name: Validate project structure
         run: |
@@ -90,18 +95,8 @@ jobs:
         run: |
           echo "开始编译中国矿业大学学位论文..."
 
-          # 设置编译参数
           export TEXMFCACHE=/tmp/texmf-cache
           mkdir -p $TEXMFCACHE
-
-          # 显示可用的字体（调试用）
-          echo "=== 检查字体可用性 ==="
-          fc-list | grep -i sim || echo "未找到SimSun等字体，但继续编译..."
-          fc-list | grep -i arial || echo "未找到Arial字体，但继续编译..."
-          fc-list | grep -i "times new roman" || echo "未找到Times New Roman字体，但继续编译..."
-
-          # 设置 LaTeX 编译环境变量
-          export OSFONTDIR=/usr/share/fonts:/usr/local/share/fonts:$HOME/.fonts:./Assets/Fonts
 
           echo "第一次编译（生成辅助文件）..."
           xelatex -interaction=nonstopmode -halt-on-error thesis.tex || {
@@ -187,16 +182,8 @@ jobs:
       - name: Create release package
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          # 获取版本信息
-          if git describe --tags --exact-match HEAD 2>/dev/null; then
-            version=$(git describe --tags --exact-match HEAD)
-          else
-            version="main-$(git rev-parse --short HEAD)"
-          fi
-          
+          version=$(git describe --tags --always)
           echo "创建发布包: cumt-thesis-$version.zip"
-          
-          # 创建发布包，排除不必要的文件
           zip -r "cumt-thesis-$version.zip" . \
             -x "*.git*" "*.github*" "*.vscode*" "*.DS_Store" \
             -x "*.log" "*.aux" "*.out" "*.toc" "*.lof" "*.lot" \
@@ -205,8 +192,22 @@ jobs:
 
       - name: Upload release package
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-release-asset@v1
         with:
-          name: cumt-thesis-release
-          path: cumt-thesis-*.zip
-          retention-days: 90
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: cumt-thesis-$version.zip
+          asset_name: cumt-thesis-$version.zip
+          asset_content_type: application/zip
+
+      - name: Upload source code assets
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: |
+            source-code.zip
+            source-code.tar.gz
+          asset_name: |
+            Source code (zip)
+            Source code (tar.gz)
+          asset_content_type: application/zip
