@@ -39,17 +39,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Install TeX Live with required packages
-        uses: TeX-Live/setup-texlive-action@v3
-        with:
-          packages: >-
-            ${{ env.XECJK_PKGS }} ${{ env.CTEX_PKGS }} ${{ env.BIBLATEX_PKGS }}
-            ${{ env.HYPERREF_PKGS }} ${{ env.NOMENCL_PKGS }} ${{ env.BIN_PKGS }}
-            ${{ env.REQUIRED_PKGS }} ${{ env.FONT_PKGS }} ${{ env.EXTRA_PKGS }}
-            ${{ env.MARKDOWN_PKGS }} ${{ env.DOC_PKGS }} ${{ env.EXAMPLE_PLGS }}
-          update-all-packages: true
-      
+
+      - name: Install TeX Live with XeLaTeX and required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-xetex texlive-bibtex-extra texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+
       - name: Install system fonts
         run: |
           sudo apt-get update
@@ -57,14 +52,14 @@ jobs:
             fonts-wqy-microhei fonts-wqy-zenhei \
             fonts-arphic-ukai fonts-arphic-uming \
             fonts-noto-cjk fonts-noto-cjk-extra
-          
+
           # 安装项目自定义字体
           if [ -d "Assets/Fonts" ]; then
             sudo mkdir -p /usr/share/fonts/truetype/cumt-thesis
             sudo cp Assets/Fonts/*.ttf /usr/share/fonts/truetype/cumt-thesis/ || echo "字体安装完成（部分文件可能缺失）"
             fc-cache -fv
           fi
-          
+
           echo "=== 可用中文字体 ==="
           fc-list :lang=zh-cn | head -10
 
@@ -77,7 +72,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: src
-          
+
       - name: Validate project structure
         run: |
           echo "=== 验证项目结构 ==="
@@ -85,35 +80,35 @@ jobs:
           [ -f "thesis.tex" ] && echo "✅ thesis.tex 存在" || echo "❌ thesis.tex 不存在"
           [ -f "cumtthesis.cls" ] && echo "✅ cumtthesis.cls 存在" || echo "❌ cumtthesis.cls 不存在"
           [ -f "bibliography.bib" ] && echo "✅ bibliography.bib 存在" || echo "❌ bibliography.bib 不存在"
-          
+
           echo "检查章节文件..."
           [ -d "Chapters" ] && echo "✅ Chapters 目录存在" || echo "❌ Chapters 目录不存在"
-          
+
           echo "检查图表文件..."
           [ -d "Figures" ] && echo "✅ Figures 目录存在" || echo "❌ Figures 目录不存在"
-          
+
           echo "检查字体文件..."
           [ -d "Assets/Fonts" ] && echo "✅ Assets/Fonts 目录存在" || echo "❌ Assets/Fonts 目录不存在"
-          
+
           echo "=== 项目结构验证完成 ==="
-      
+
       - name: Compile thesis (XeLaTeX with multiple passes)
         run: |
           echo "开始编译中国矿业大学学位论文..."
-          
+
           # 设置编译参数
           export TEXMFCACHE=/tmp/texmf-cache
           mkdir -p $TEXMFCACHE
-          
+
           # 显示可用的字体（调试用）
           echo "=== 检查字体可用性 ==="
           fc-list | grep -i sim || echo "未找到SimSun等字体，但继续编译..."
           fc-list | grep -i arial || echo "未找到Arial字体，但继续编译..."
           fc-list | grep -i "times new roman" || echo "未找到Times New Roman字体，但继续编译..."
-          
+
           # 设置 LaTeX 编译环境变量
           export OSFONTDIR=/usr/share/fonts:/usr/local/share/fonts:$HOME/.fonts:./Assets/Fonts
-          
+
           echo "第一次编译（生成辅助文件）..."
           xelatex -interaction=nonstopmode -halt-on-error thesis.tex || {
             echo "第一次编译失败，查看错误日志..."
@@ -122,7 +117,7 @@ jobs:
             fi
             echo "尝试继续编译..."
           }
-          
+
           echo "运行biber处理参考文献..."
           if [ -f thesis.bcf ]; then
             biber thesis || {
@@ -133,7 +128,7 @@ jobs:
           else
             echo "未找到.bcf文件，跳过biber处理"
           fi
-          
+
           echo "第二次编译（处理参考文献和交叉引用）..."
           xelatex -interaction=nonstopmode thesis.tex || {
             echo "第二次编译出现警告或错误，但尝试继续..."
@@ -142,7 +137,7 @@ jobs:
               tail -50 thesis.log
             fi
           }
-          
+
           echo "第三次编译（完善交叉引用）..."
           xelatex -interaction=nonstopmode thesis.tex || {
             echo "第三次编译出现警告或错误..."
@@ -151,7 +146,7 @@ jobs:
               tail -50 thesis.log
             fi
           }
-      
+
       - name: Check if PDF was generated
         run: |
           if [ -f thesis.pdf ]; then
