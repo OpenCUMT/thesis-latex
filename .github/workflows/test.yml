@@ -1,0 +1,214 @@
+name: Build CUMT LaTeX Thesis
+
+on: 
+  push:
+    branches: [main, dev-*]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  XECJK_PKGS: fontspec xecjk ulem xetex
+  CTEX_PKGS: cjk ctex everysel zhnumber
+  BIBLATEX_PKGS: biber biblatex biblatex-apa biblatex-gb7714-2015 biblatex-mla xstring
+  HYPERREF_PKGS: pdflscape
+  NOMENCL_PKGS: nomencl koma-script xkeyval
+  BIN_PKGS: latexmk l3build
+  REQUIRED_PKGS: >-
+    scheme-basic bibunits bigfoot caption enumitem
+    environ etoolbox filehook footmisc notoccite pdfpages threeparttable
+    titlesec trimspaces unicode-math lt3luabridge cell
+  FONT_PKGS: fandol tex-gyre xits
+  EXTRA_PKGS: algorithms apacite booktabs ntheorem siunitx
+  MARKDOWN_PKGS: markdown fancyvrb csvsimple gobble
+  DOC_PKGS: hologo hypdoc listings xcolor
+  EXAMPLE_PLGS: float fp metalogo multirow mwe
+
+  # 编译配置
+  COMPILER: "xelatex"
+  BIBER: "biber"
+  MAIN_FILE: "thesis.tex"
+
+jobs:
+  setup:
+    name: Setup TeX Live
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install TeX Live with XeLaTeX and required packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-xetex texlive-bibtex-extra texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra
+
+      - name: Install system fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            fonts-wqy-microhei fonts-wqy-zenhei \
+            fonts-arphic-ukai fonts-arphic-uming \
+            fonts-noto-cjk fonts-noto-cjk-extra
+
+          # 安装项目自定义字体
+          if [ -d "Assets/Fonts" ]; then
+            sudo mkdir -p /usr/share/fonts/truetype/cumt-thesis
+            sudo cp Assets/Fonts/*.ttf /usr/share/fonts/truetype/cumt-thesis/ || echo "字体安装完成（部分文件可能缺失）"
+            fc-cache -fv
+          fi
+
+          echo "=== 可用中文字体 ==="
+          fc-list :lang=zh-cn | head -10
+
+  build:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate project structure
+        run: |
+          echo "=== 验证项目结构 ==="
+          echo "检查主要文件..."
+          [ -f "thesis.tex" ] && echo "✅ thesis.tex 存在" || echo "❌ thesis.tex 不存在"
+          [ -f "cumtthesis.cls" ] && echo "✅ cumtthesis.cls 存在" || echo "❌ cumtthesis.cls 不存在"
+          [ -f "bibliography.bib" ] && echo "✅ bibliography.bib 存在" || echo "❌ bibliography.bib 不存在"
+
+          echo "检查章节文件..."
+          [ -d "Chapters" ] && echo "✅ Chapters 目录存在" || echo "❌ Chapters 目录不存在"
+
+          echo "检查图表文件..."
+          [ -d "Figures" ] && echo "✅ Figures 目录存在" || echo "❌ Figures 目录不存在"
+
+          echo "检查字体文件..."
+          [ -d "Assets/Fonts" ] && echo "✅ Assets/Fonts 目录存在" || echo "❌ Assets/Fonts 目录不存在"
+
+          echo "=== 项目结构验证完成 ==="
+
+      - name: Compile thesis (XeLaTeX with multiple passes)
+        run: |
+          echo "开始编译中国矿业大学学位论文..."
+
+          export TEXMFCACHE=/tmp/texmf-cache
+          mkdir -p $TEXMFCACHE
+
+          echo "第一次编译（生成辅助文件）..."
+          xelatex -interaction=nonstopmode -halt-on-error thesis.tex || {
+            echo "第一次编译失败，查看错误日志..."
+            if [ -f thesis.log ]; then
+              tail -50 thesis.log
+            fi
+            echo "尝试继续编译..."
+          }
+
+          echo "运行biber处理参考文献..."
+          if [ -f thesis.bcf ]; then
+            biber thesis || {
+              echo "biber处理失败，但继续编译..."
+              echo "检查是否有参考文献文件..."
+              ls -la *.bib || echo "未找到.bib文件"
+            }
+          else
+            echo "未找到.bcf文件，跳过biber处理"
+          fi
+
+          echo "第二次编译（处理参考文献和交叉引用）..."
+          xelatex -interaction=nonstopmode thesis.tex || {
+            echo "第二次编译出现警告或错误，但尝试继续..."
+            if [ -f thesis.log ]; then
+              echo "=== 编译日志最后50行 ==="
+              tail -50 thesis.log
+            fi
+          }
+
+          echo "第三次编译（完善交叉引用）..."
+          xelatex -interaction=nonstopmode thesis.tex || {
+            echo "第三次编译出现警告或错误..."
+            if [ -f thesis.log ]; then
+              echo "=== 编译日志最后50行 ==="
+              tail -50 thesis.log
+            fi
+          }
+
+      - name: Check if PDF was generated
+        run: |
+          if [ -f thesis.pdf ]; then
+            echo "✅ PDF 生成成功"
+            ls -lh thesis.pdf
+            file thesis.pdf
+            echo "PDF文件信息："
+            pdfinfo thesis.pdf || echo "无法获取PDF信息，但文件存在"
+          else
+            echo "❌ PDF 生成失败"
+            echo "=== 列出当前目录文件 ==="
+            ls -la
+            echo "=== 检查辅助文件 ==="
+            ls -la *.aux *.log *.out 2>/dev/null || echo "未找到某些辅助文件"
+            echo "=== 完整编译日志 ==="
+            if [ -f thesis.log ]; then
+              cat thesis.log
+            else
+              echo "未找到thesis.log文件"
+            fi
+            exit 1
+          fi
+
+      - name: Upload compilation logs (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compilation-logs
+          path: |
+            *.log
+            *.aux
+            *.out
+            *.blg
+            *.bbl
+          retention-days: 7
+
+      - name: Upload thesis PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: cumt-thesis-pdf
+          path: thesis.pdf
+          retention-days: 30
+
+      - name: Create release package
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          version=$(git describe --tags --always)
+          echo "创建发布包: cumt-thesis-$version.zip"
+          zip -r "cumt-thesis-$version.zip" . \
+            -x "*.git*" "*.github*" "*.vscode*" "*.DS_Store" \
+            -x "*.log" "*.aux" "*.out" "*.toc" "*.lof" "*.lot" \
+            -x "*.fls" "*.fdb_latexmk" "*.bbl" "*.blg" "*.run.xml" \
+            -x "*.bcf" "*.synctex.gz" "*.nav" "*.snm" "*.vrb"
+
+      - name: Upload release package
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: cumt-thesis-$version.zip
+          asset_name: cumt-thesis-$version.zip
+          asset_content_type: application/zip
+
+      - name: Upload source code assets
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: |
+            source-code.zip
+            source-code.tar.gz
+          asset_name: |
+            Source code (zip)
+            Source code (tar.gz)
+          asset_content_type: application/zip
