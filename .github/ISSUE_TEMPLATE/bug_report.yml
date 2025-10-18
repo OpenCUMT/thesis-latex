@@ -17,7 +17,7 @@ body:
       required: true
 
   - type: input
-    id: tex
+    id: environment
     attributes:
       label: 环境版本
       description: |
@@ -41,6 +41,11 @@ body:
         请提供能复现此问题的步骤，如果包含有问题的代码请给出代码的内容或链接，这对于我们定位问题十分有帮助
     validations:
       required: true
+
+  - type: textarea
+    id: expected-result
+    attributes:
+      label: 预期结果
 
   - type: textarea
     id: others
