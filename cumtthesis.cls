@@ -1485,7 +1485,6 @@
     \vspace*{8bp}
     \printbibliography[heading=none]
     \endgroup
-    \label{cumt@reference@end@page}
     \cumt@clearpage
 }
 
@@ -1518,6 +1517,7 @@
 }
 {%
     \makeatother
+    \label{cumt@reference@end@page} 
     \cumt@clearpage
 }
 
