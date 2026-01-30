@@ -672,7 +672,6 @@
 \RequirePackage{listings} % 代码块支持
 \RequirePackage{xpatch} % 补丁命令
 \RequirePackage{verbatim} % 注释
-\RequirePackage{tabulary} % 自动列宽
 
 % 矿大蓝 RGB:30,50,100 (#1e3264)
 \definecolor{cumtblue}{RGB}{30,50,100}
@@ -1576,11 +1575,11 @@
             \arrayrulecolor{black}
             {
                 \zihao{5}
-                \begin{tabulary}{15.05cm}{|C|>{\centering\arraybackslash}m{1.3cm}|>{\centering\arraybackslash}m{2.3cm}|>{\centering\arraybackslash}m{1.3cm}|C|}
-                \hline
-                {\bfseries 关键词$\bm \ast$} & {\bfseries 密级$\bm \ast$} & {\bfseries 中图分类号$\bm \ast$} & {\bfseries UDC} & {\bfseries 论文资助} \\ \hline
-                {\@cnkeywords} & {\cumt@security@level} & {\cumt@clc} & {\cumt@udc} & {\cumt@funding}  \\ \hline
-                \end{tabulary}
+                \begin{tabularx}{15.05cm}{|>{\centering\arraybackslash}m{2.3cm}|>{\centering\arraybackslash}m{1.3cm}|>{\centering\arraybackslash}m{2.3cm}|>{\centering\arraybackslash}m{1.3cm}|X|}
+                    \hline
+                    {\bfseries 关键词$\bm \ast$} & {\bfseries 密级$\bm \ast$} & {\bfseries 中图分类号$\bm \ast$} & {\bfseries UDC} & {\bfseries 论文资助} \\ \hline
+                    {\@cnkeywords} & {\cumt@security@level} & {\cumt@clc} & {\cumt@udc} & {\cumt@funding}  \\ \hline
+                \end{tabularx}
             }
             \vskip -1.4pt
             {
